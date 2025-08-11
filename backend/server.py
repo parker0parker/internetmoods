@@ -75,6 +75,25 @@ source_breakdown = {"reddit": 0, "mastodon": 0, "google_trends": 0}
 recent_posts = []  # Store recent posts for display
 geographic_data = {}  # Store geographic sentiment data
 historical_data = deque(maxlen=1440)  # Store 24 hours of minute-by-minute data
+country_sentiment = {}  # Store country-specific sentiment data
+
+def generate_country_sentiment(base_happiness):
+    """Generate country-specific sentiment data with some variation"""
+    countries = [
+        'United States', 'United Kingdom', 'Germany', 'France', 'Japan',
+        'Australia', 'Brazil', 'India', 'China', 'Canada', 'Russia',
+        'South Africa', 'Mexico', 'Italy', 'Spain', 'South Korea',
+        'Sweden', 'Netherlands', 'Argentina', 'Nigeria'
+    ]
+    
+    country_data = {}
+    for country in countries:
+        # Add some random variation around the base happiness
+        variation = random.uniform(-15, 15)
+        country_happiness = max(0, min(100, base_happiness + variation))
+        country_data[country] = country_happiness
+    
+    return country_data
 
 def clean_text(text):
     """Clean and preprocess text for sentiment analysis"""
