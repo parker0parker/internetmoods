@@ -311,43 +311,55 @@ body {
   min-height: 400px;
 }
 
+/* Globe Tooltip */
+.globe-tooltip {
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid #e3e3e3;
+  padding: 0.75rem 1rem;
+  backdrop-filter: blur(10px);
+  font-family: 'Noto Sans Mono', monospace;
+  min-width: 150px;
+}
+
+.tooltip-country {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #e3e3e3;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #333333;
+  padding-bottom: 0.5rem;
+}
+
+.tooltip-sentiment {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tooltip-percentage {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.tooltip-mood {
+  font-size: 0.7rem;
+  color: #999999;
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+  font-weight: 400;
+}
+
+/* Globe container cursor management */
 .globe-container {
   height: 400px;
   width: 100%;
   background: radial-gradient(circle, #111111 0%, #000000 100%);
   border: 1px solid #e3e3e3;
   position: relative;
-}
-
-.globe-legend {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #333333;
-}
-
-.legend-title {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: #666666;
-  margin-bottom: 1rem;
-  font-weight: 500;
-}
-
-.legend-colors {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.legend-color {
-  font-size: 0.65rem;
-  text-transform: lowercase;
-  letter-spacing: 0.05em;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 400;
+  cursor: default;
 }
 
 .legend-color.happy { color: #00ff88; }
