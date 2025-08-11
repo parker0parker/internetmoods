@@ -110,48 +110,42 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
-def analyze_sentiment(text: str) -> Dict[str, Any]:
-    """Analyze sentiment using VADER"""
-    scores = vader_analyzer.polarity_scores(text)
-    
-    # Convert compound score to happiness scale (0-100)
-    happiness_score = ((scores['compound'] + 1) / 2) * 100
-    
-    # Determine label
-    if scores['compound'] >= 0.05:
-        label = "positive"
-    elif scores['compound'] <= -0.05:
-        label = "negative"
-    else:
-        label = "neutral"
-    
-    return {
-        "compound": scores['compound'],
-        "happiness_score": happiness_score,
-        "label": label,
-        "breakdown": {
-            "positive": scores['pos'],
-            "neutral": scores['neu'],
-            "negative": scores['neg']
-        }
-    }
+def analyze_sentiment(text: str, source: str = "unknown") -> Dict[str, Any]:
+    """Analyze sentiment using advanced multi-method approach"""
+    return advanced_analyzer.analyze_sentiment(text, source)
 
-def update_happiness_index(sentiment_score: float, source: str, post_data: dict = None):
-    """Update the global happiness index"""
-    global current_happiness, total_posts_analyzed, recent_posts
+def update_happiness_index(sentiment_data: Dict[str, Any], source: str, post_data: dict = None):
+    """Update the global happiness index with enhanced tracking"""
+    global current_happiness, total_posts_analyzed, recent_posts, historical_data
+    
+    sentiment_score = sentiment_data.get("happiness_score", 50.0)
     
     happiness_scores.append(sentiment_score)
     source_breakdown[source] += 1
     total_posts_analyzed += 1
     
-    # Add to recent posts
+    # Add to recent posts with enhanced data
     if post_data:
-        recent_posts.insert(0, post_data)
-        recent_posts = recent_posts[:20]  # Keep only last 20 posts
+        enhanced_post = {
+            **post_data,
+            **sentiment_data,
+            "analysis_timestamp": datetime.utcnow().isoformat()
+        }
+        recent_posts.insert(0, enhanced_post)
+        recent_posts = recent_posts[:50]  # Keep more posts for analysis
     
     # Calculate rolling average
     if happiness_scores:
         current_happiness = statistics.mean(happiness_scores)
+    
+    # Update historical data (minute-by-minute)
+    current_time = datetime.utcnow()
+    historical_data.append({
+        "timestamp": current_time.isoformat(),
+        "happiness": current_happiness,
+        "posts_count": total_posts_analyzed,
+        "source_breakdown": source_breakdown.copy()
+    })
 
 class RedditStreamer:
     def __init__(self):
