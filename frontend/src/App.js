@@ -508,6 +508,34 @@ const AboutSection = ({ isVisible, onClose }) => {
                 <span>Search behavior patterns and interests</span>
               </div>
             </div>
+            <div className="source-item">
+              <span className="source-icon" style={{ color: '#44ff66' }}>Y</span>
+              <div>
+                <strong>YouTube</strong>
+                <span>Comments from trending videos</span>
+              </div>
+            </div>
+            <div className="source-item">
+              <span className="source-icon" style={{ color: '#ff6644' }}>N</span>
+              <div>
+                <strong>News</strong>
+                <span>Headlines and articles from global news sources</span>
+              </div>
+            </div>
+            <div className="source-item">
+              <span className="source-icon" style={{ color: '#6644ff' }}>X</span>
+              <div>
+                <strong>Twitter/X</strong>
+                <span>Public tweets and social discussions</span>
+              </div>
+            </div>
+            <div className="source-item">
+              <span className="source-icon" style={{ color: '#ff44aa' }}>F</span>
+              <div>
+                <strong>Forums</strong>
+                <span>Public discussion boards and communities</span>
+              </div>
+            </div>
           </div>
         </div>
 
