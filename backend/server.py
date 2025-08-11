@@ -39,8 +39,8 @@ app = FastAPI()
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
-# Initialize sentiment analyzer
-analyzer = SentimentIntensityAnalyzer()
+# Initialize sentiment analyzers
+vader_analyzer = SentimentIntensityAnalyzer()
 
 # Connection manager for WebSockets
 class ConnectionManager:
@@ -70,11 +70,29 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 # Global variables for happiness tracking
-happiness_scores = deque(maxlen=100)  # Store last 100 scores
+happiness_scores = deque(maxlen=1000)  # Store more scores for better analysis
 current_happiness = 50.0  # Start with neutral
 total_posts_analyzed = 0
-source_breakdown = {"reddit": 0, "mastodon": 0}
+source_breakdown = {"reddit": 0, "mastodon": 0, "google_trends": 0}
 recent_posts = []  # Store recent posts for display
+geographic_data = {}  # Store geographic sentiment data
+historical_data = deque(maxlen=1440)  # Store 24 hours of minute-by-minute data
+
+def clean_text(text):
+    """Clean and preprocess text for sentiment analysis"""
+    if not text:
+        return ""
+    
+    # Remove URLs
+    text = re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', text)
+    
+    # Remove mentions and hashtags for cleaner analysis
+    text = re.sub(r'@\w+|#\w+', '', text)
+    
+    # Remove extra whitespace
+    text = re.sub(r'\s+', ' ', text).strip()
+    
+    return text
 
 # Define Models
 class HappinessData(BaseModel):
@@ -96,7 +114,7 @@ class StatusCheckCreate(BaseModel):
 
 def analyze_sentiment(text: str) -> Dict[str, Any]:
     """Analyze sentiment using VADER"""
-    scores = analyzer.polarity_scores(text)
+    scores = vader_analyzer.polarity_scores(text)
     
     # Convert compound score to happiness scale (0-100)
     happiness_score = ((scores['compound'] + 1) / 2) * 100
