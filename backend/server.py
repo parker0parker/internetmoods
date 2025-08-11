@@ -11,7 +11,7 @@ from typing import List, Dict, Any
 import uuid
 from datetime import datetime, timedelta
 import json
-import praw
+import requests
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import statistics
 from collections import deque
