@@ -226,7 +226,7 @@ body {
   font-weight: 300;
 }
 
-/* Enhanced Post Cards with Color */
+/* Enhanced Post Cards with Color and Clickable Links */
 .post-card {
   background-color: #000000;
   border: 1px solid #e3e3e3;
@@ -237,6 +237,35 @@ body {
 .post-card:hover {
   border-color: #e3e3e3;
   transform: translateY(-1px);
+}
+
+.post-card-clickable {
+  cursor: pointer;
+}
+
+.post-card-clickable:hover {
+  border-color: #ffffff;
+  background-color: #111111;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(227, 227, 227, 0.1);
+}
+
+.post-link-indicator {
+  font-size: 0.8rem;
+  color: #666666;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.post-card-clickable:hover .post-link-indicator {
+  opacity: 1;
+  color: #e3e3e3;
+}
+
+.post-subreddit,
+.post-instance {
+  opacity: 0.7;
+  font-size: 0.6rem;
 }
 
 .main-title {
