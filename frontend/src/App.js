@@ -234,7 +234,67 @@ const JoyDivisionChart = ({ scores, title }) => {
   );
 };
 
-// Minimal stat component
+// Tooltip component outside Canvas
+const GlobeTooltip = ({ country, sentiment, position, visible }) => {
+  if (!visible || !country) return null;
+  
+  const getSentimentColor = (sentiment) => {
+    if (sentiment >= 70) return '#00ff88';
+    if (sentiment >= 60) return '#44ff66';
+    if (sentiment >= 50) return '#ffaa00';
+    if (sentiment >= 40) return '#ff6644';
+    return '#ff4466';
+  };
+
+  const getSentimentText = (sentiment) => {
+    if (sentiment >= 95) return 'ecstatic';
+    if (sentiment >= 90) return 'euphoric';
+    if (sentiment >= 85) return 'elated';
+    if (sentiment >= 80) return 'jubilant';
+    if (sentiment >= 75) return 'joyful';
+    if (sentiment >= 70) return 'cheerful';
+    if (sentiment >= 65) return 'upbeat';
+    if (sentiment >= 60) return 'optimistic';
+    if (sentiment >= 55) return 'content';
+    if (sentiment >= 50) return 'neutral';
+    if (sentiment >= 45) return 'subdued';
+    if (sentiment >= 40) return 'melancholic';
+    if (sentiment >= 35) return 'gloomy';
+    if (sentiment >= 30) return 'somber';
+    if (sentiment >= 25) return 'dejected';
+    if (sentiment >= 20) return 'despairing';
+    if (sentiment >= 15) return 'anguished';
+    if (sentiment >= 10) return 'tormented';
+    if (sentiment >= 5) return 'devastated';
+    return 'despondent';
+  };
+
+  return (
+    <div 
+      className="globe-tooltip"
+      style={{
+        position: 'fixed',
+        left: position.x + 15,
+        top: position.y - 10,
+        zIndex: 1000,
+        pointerEvents: 'none'
+      }}
+    >
+      <div className="tooltip-country">{country}</div>
+      <div className="tooltip-sentiment">
+        <span 
+          className="tooltip-percentage"
+          style={{ color: getSentimentColor(sentiment) }}
+        >
+          {sentiment.toFixed(1)}%
+        </span>
+        <span className="tooltip-mood">
+          {getSentimentText(sentiment)}
+        </span>
+      </div>
+    </div>
+  );
+};
 const MinimalStat = ({ label, value, sublabel }) => (
   <div className="minimal-stat">
     <div className="stat-value">{value}</div>
