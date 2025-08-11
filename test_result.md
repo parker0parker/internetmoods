@@ -213,6 +213,18 @@ backend:
         agent: "testing"
         comment: "VADER sentiment analysis working correctly. Sentiment scores properly converted to 0-100 happiness scale, labels correctly assigned (positive/negative/neutral), compound scores calculated properly."
 
+  - task: "Reddit Data Collection"
+    implemented: true
+    working: false
+    file: "backend/data_collectors.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Reddit API returning 403 errors, blocking public JSON API access. Need to implement alternative Reddit data collection method or mock data for Reddit to ensure consistent data flow."
+
   - task: "Data Structure Validation"
     implemented: true
     working: true
