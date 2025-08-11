@@ -465,7 +465,7 @@ const MinimalStat = ({ label, value, sublabel }) => (
   </div>
 );
 
-// Minimal post card with color accents
+// Minimal post card with color accents and clickable links
 const PostCard = ({ post }) => {
   const getSentimentProps = (label, score) => {
     if (label === 'positive') {
@@ -482,15 +482,33 @@ const PostCard = ({ post }) => {
       case 'reddit': return { icon: 'R', color: '#00ff88' };
       case 'mastodon': return { icon: 'M', color: '#ff4466' };
       case 'google_trends': return { icon: 'T', color: '#ffaa00' };
+      case 'youtube': return { icon: 'Y', color: '#44ff66' };
+      case 'news': return { icon: 'N', color: '#ff6644' };
+      case 'twitter': return { icon: 'X', color: '#6644ff' };
+      case 'forums': return { icon: 'F', color: '#ff44aa' };
       default: return { icon: '•', color: '#e3e3e3' };
     }
   };
 
   const sentimentProps = getSentimentProps(post.sentiment_label, post.sentiment_score);
   const sourceProps = getSourceProps(post.source);
+  
+  // Handle click to open source URL
+  const handleClick = () => {
+    if (post.url && post.url !== '' && post.url !== 'undefined') {
+      window.open(post.url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const isClickable = post.url && post.url !== '' && post.url !== 'undefined';
 
   return (
-    <div className="post-card" style={{ backgroundColor: sentimentProps.bgColor }}>
+    <div 
+      className={`post-card ${isClickable ? 'post-card-clickable' : ''}`}
+      style={{ backgroundColor: sentimentProps.bgColor }}
+      onClick={handleClick}
+      title={isClickable ? `Open ${post.source} source` : ''}
+    >
       <div className="post-header">
         <span 
           className="post-source" 
@@ -504,6 +522,9 @@ const PostCard = ({ post }) => {
         >
           {sentimentProps.symbol} {post.sentiment_score.toFixed(0)}
         </span>
+        {isClickable && (
+          <span className="post-link-indicator">↗</span>
+        )}
       </div>
       <div className="post-text">{post.text}</div>
       <div className="post-meta">
@@ -512,6 +533,12 @@ const PostCard = ({ post }) => {
           hour: '2-digit', 
           minute: '2-digit' 
         })}
+        {post.subreddit && (
+          <span className="post-subreddit"> • r/{post.subreddit}</span>
+        )}
+        {post.instance && (
+          <span className="post-instance"> • {post.instance}</span>
+        )}
       </div>
     </div>
   );
