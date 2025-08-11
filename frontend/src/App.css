@@ -367,6 +367,10 @@ body {
   gap: 0.5rem;
 }
 
+.legend-color.happy { color: #00ff88; }
+.legend-color.neutral { color: #ffaa00; }
+.legend-color.sad { color: #ff4466; }
+
 .sentiment-readout {
   text-align: left;
   padding: 2rem 0;
