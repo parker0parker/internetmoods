@@ -835,9 +835,9 @@ function App() {
 
       {happinessData.happiness_trend.length > 5 && (
         <div className="chart-section">
-          <JoyDivisionChart 
+          <HappinessTimelineChart 
             scores={happinessData.happiness_trend} 
-            title="SENTIMENT WAVES"
+            title="HAPPINESS TIMELINE"
           />
         </div>
       )}
