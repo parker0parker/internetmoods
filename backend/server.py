@@ -20,7 +20,10 @@ import statistics
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 # Import our custom modules
-from data_collectors import reddit_collector, mastodon_collector, google_trends_collector
+from data_collectors import (
+    reddit_collector, mastodon_collector, google_trends_collector,
+    youtube_collector, news_collector, twitter_collector, forums_collector
+)
 from advanced_sentiment import advanced_analyzer
 
 ROOT_DIR = Path(__file__).parent
