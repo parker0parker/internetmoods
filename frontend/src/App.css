@@ -357,7 +357,6 @@ body {
   height: 400px;
   width: 100%;
   background: radial-gradient(circle, #111111 0%, #000000 100%);
-  border: 1px solid #e3e3e3;
   position: relative;
   cursor: default;
 }
