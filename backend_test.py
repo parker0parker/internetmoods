@@ -151,18 +151,18 @@ class HappinessIndexTester:
             if response.status_code == 200:
                 data = response.json()
                 
-                if "message" not in data or "subreddits" not in data:
-                    self.log_test("Start Streaming Structure", False, "Missing message or subreddits", data)
+                if "message" not in data or "sources" not in data:
+                    self.log_test("Start Streaming Structure", False, "Missing message or sources", data)
                     return False
                 
-                subreddits = data.get("subreddits", [])
-                expected_subreddits = ["wholesomememes", "UpliftingNews", "happy", "MadeMeSmile", "todayilearned", "AskReddit", "funny"]
+                sources = data.get("sources", [])
+                expected_sources = ["reddit", "mastodon", "google_trends"]
                 
-                if not all(sub in subreddits for sub in expected_subreddits):
-                    self.log_test("Start Streaming Subreddits", False, f"Missing expected subreddits", data)
+                if not all(source in sources for source in expected_sources):
+                    self.log_test("Start Streaming Sources", False, f"Missing expected sources", data)
                     return False
                 
-                self.log_test("Start Streaming Endpoint", True, f"Started streaming {len(subreddits)} subreddits", data)
+                self.log_test("Start Streaming Endpoint", True, f"Started streaming {len(sources)} sources", data)
                 return True
             else:
                 self.log_test("Start Streaming Endpoint", False, f"Status: {response.status_code}", response.text)
