@@ -96,7 +96,7 @@ const GlassEmojiFace = ({ happiness }) => {
   );
 };
 
-// Joy Division inspired trend visualization
+// Improved Joy Division chart with actual data representation
 const JoyDivisionChart = ({ scores, title }) => {
   const canvasRef = useRef(null);
 
@@ -112,42 +112,68 @@ const JoyDivisionChart = ({ scores, title }) => {
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, width/2, height/2);
 
-    // Joy Division style waves
-    const waves = 12;
-    const waveHeight = height / 2 / waves;
+    // Create meaningful waves based on happiness data
+    const waves = Math.min(15, scores.length);
+    const waveHeight = height / 2 / (waves + 1);
     
-    ctx.strokeStyle = '#e3e3e3';
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.5;
 
     for (let i = 0; i < waves; i++) {
       ctx.beginPath();
-      const baseY = (i + 1) * waveHeight;
+      const dataPoint = scores[Math.floor((i / waves) * scores.length)] || 50;
+      const intensity = Math.abs(dataPoint - 50) / 50; // 0 to 1
       
-      for (let x = 0; x < width/2; x += 4) {
-        const dataIndex = Math.floor((x / (width/2)) * scores.length);
-        const score = scores[dataIndex] || 50;
+      // Color based on sentiment with pops of color
+      if (dataPoint >= 60) {
+        ctx.strokeStyle = '#00ff88'; // Happy - green
+      } else if (dataPoint <= 40) {
+        ctx.strokeStyle = '#ff4466'; // Sad - red
+      } else {
+        ctx.strokeStyle = '#ffaa00'; // Neutral - orange
+      }
+      
+      // Adjust opacity based on intensity
+      ctx.globalAlpha = 0.3 + (intensity * 0.7);
+      
+      const baseY = (i + 1) * waveHeight + 20;
+      const points = 120;
+      
+      for (let x = 0; x < points; x++) {
+        const xPos = (x / points) * (width / 2);
         
-        // Create wave distortion based on happiness data
-        const amplitude = Math.abs(score - 50) * 0.8;
-        const frequency = 0.02 + (i * 0.005);
-        const wave = Math.sin(x * frequency) * amplitude * 0.3;
-        const dataWave = (score - 50) * 0.1;
+        // Create wave based on actual data trends
+        let wave = 0;
         
-        const y = baseY - wave - dataWave;
+        if (x < scores.length) {
+          const currentScore = scores[x] || 50;
+          const normalizedScore = (currentScore - 50) / 50; // -1 to 1
+          wave = normalizedScore * intensity * 30;
+        }
+        
+        // Add some organic wave pattern
+        const organicWave = Math.sin(x * 0.1 + i * 0.5) * intensity * 8;
+        const finalY = baseY - wave - organicWave;
         
         if (x === 0) {
-          ctx.moveTo(x, y);
+          ctx.moveTo(xPos, finalY);
         } else {
-          ctx.lineTo(x, y);
+          ctx.lineTo(xPos, finalY);
         }
       }
       ctx.stroke();
     }
+    
+    ctx.globalAlpha = 1;
   }, [scores]);
 
   return (
     <div className="joy-chart">
       <div className="chart-title">{title}</div>
+      <div className="chart-legend">
+        <span className="legend-item happy">■ positive sentiment</span>
+        <span className="legend-item neutral">■ neutral sentiment</span>
+        <span className="legend-item sad">■ negative sentiment</span>
+      </div>
       <canvas ref={canvasRef} className="joy-canvas" />
     </div>
   );
