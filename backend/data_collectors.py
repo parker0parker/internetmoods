@@ -414,3 +414,8 @@ youtube_collector = YouTubeCommentsCollector()
 news_collector = NewsAPICollector()
 twitter_collector = TwitterCollector()
 forums_collector = PublicForumsCollector()
+
+# Initialize original collectors
+reddit_collector = RedditCollector()
+mastodon_collector = MastodonCollector()
+google_trends_collector = GoogleTrendsCollector()
