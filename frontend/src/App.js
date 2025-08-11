@@ -155,15 +155,30 @@ function App() {
       
       if (message.type === 'new_post') {
         // Update happiness data
-        setHappinessData({
+        setHappinessData(prev => ({
+          ...prev,
           current_happiness: message.data.current_happiness,
           total_posts_analyzed: message.data.total_analyzed,
           source_breakdown: message.data.source_breakdown,
-          happiness_trend: happinessData.happiness_trend.slice(-9).concat([message.data.current_happiness])
-        });
+          happiness_trend: prev.happiness_trend.slice(-9).concat([message.data.current_happiness])
+        }));
         
         // Add new post to recent posts
         setRecentPosts(prev => [message.data, ...prev.slice(0, 19)]);
+      } else if (message.type === 'happiness_update') {
+        // Update happiness data from periodic broadcast
+        setHappinessData(prev => ({
+          ...prev,
+          current_happiness: message.data.current_happiness,
+          total_posts_analyzed: message.data.total_analyzed,
+          source_breakdown: message.data.source_breakdown,
+          happiness_trend: prev.happiness_trend.slice(-9).concat([message.data.current_happiness])
+        }));
+        
+        // Update recent posts if provided
+        if (message.data.recent_posts) {
+          setRecentPosts(message.data.recent_posts);
+        }
       } else if (message.type === 'initial_status') {
         setHappinessData(prev => ({
           ...prev,
