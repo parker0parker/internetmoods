@@ -10,7 +10,7 @@ const API = `${BACKEND_URL}/api`;
 const WS_URL = BACKEND_URL.replace('https://', 'wss://').replace('http://', 'ws://');
 
 // 3D Wireframe Globe with Country Sentiment and Hover Tooltips
-const WireframeGlobe = ({ happiness, countrySentiment }) => {
+const WireframeGlobe = ({ happiness, countrySentiment, onCountryHover }) => {
   const meshRef = useRef();
   const groupRef = useRef();
   const linesRef = useRef();
@@ -30,34 +30,53 @@ const WireframeGlobe = ({ happiness, countrySentiment }) => {
     return '#ff4466'; // Very sad - red
   };
 
-  const getSentimentText = (sentiment) => {
-    if (sentiment >= 95) return 'ecstatic';
-    if (sentiment >= 90) return 'euphoric';
-    if (sentiment >= 85) return 'elated';
-    if (sentiment >= 80) return 'jubilant';
-    if (sentiment >= 75) return 'joyful';
-    if (sentiment >= 70) return 'cheerful';
-    if (sentiment >= 65) return 'upbeat';
-    if (sentiment >= 60) return 'optimistic';
-    if (sentiment >= 55) return 'content';
-    if (sentiment >= 50) return 'neutral';
-    if (sentiment >= 45) return 'subdued';
-    if (sentiment >= 40) return 'melancholic';
-    if (sentiment >= 35) return 'gloomy';
-    if (sentiment >= 30) return 'somber';
-    if (sentiment >= 25) return 'dejected';
-    if (sentiment >= 20) return 'despairing';
-    if (sentiment >= 15) return 'anguished';
-    if (sentiment >= 10) return 'tormented';
-    if (sentiment >= 5) return 'devastated';
-    return 'despondent';
-  };
-
   // Create wireframe sphere geometry
   const createWireframeSphere = () => {
     const geometry = new THREE.SphereGeometry(2, 24, 16);
     const edges = new THREE.EdgesGeometry(geometry);
     return edges;
+  };
+
+  // Create interactive country dot
+  const CountryDot = ({ position, sentiment, name }) => {
+    const [hovered, setHovered] = useState(false);
+    
+    return (
+      <mesh 
+        position={position}
+        onPointerOver={(event) => {
+          event.stopPropagation();
+          setHovered(true);
+          onCountryHover({ name, sentiment });
+          document.body.style.cursor = 'pointer';
+        }}
+        onPointerOut={(event) => {
+          event.stopPropagation();
+          setHovered(false);
+          onCountryHover(null);
+          document.body.style.cursor = 'default';
+        }}
+      >
+        <sphereGeometry args={[hovered ? 0.08 : 0.06, 8, 8]} />
+        <meshBasicMaterial 
+          color={getSentimentColor(sentiment)} 
+          transparent={true}
+          opacity={hovered ? 1.0 : 0.9}
+        />
+        
+        {/* Glow effect on hover */}
+        {hovered && (
+          <mesh>
+            <sphereGeometry args={[0.12, 8, 8]} />
+            <meshBasicMaterial 
+              color={getSentimentColor(sentiment)} 
+              transparent={true}
+              opacity={0.3}
+            />
+          </mesh>
+        )}
+      </mesh>
+    );
   };
 
   // Major country positions with more countries
@@ -121,18 +140,12 @@ const WireframeGlobe = ({ happiness, countrySentiment }) => {
         {Object.entries(countryPositions).map(([country, position]) => {
           const sentiment = countrySentiment[country] || happiness;
           return (
-            <mesh 
+            <CountryDot
               key={country}
               position={position}
-              userData={{ country, sentiment }}
-            >
-              <sphereGeometry args={[0.06, 8, 8]} />
-              <meshBasicMaterial 
-                color={getSentimentColor(sentiment)} 
-                transparent={true}
-                opacity={0.9}
-              />
-            </mesh>
+              sentiment={sentiment}
+              name={country}
+            />
           );
         })}
 
