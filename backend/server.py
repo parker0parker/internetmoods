@@ -318,9 +318,27 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 async def startup_event():
     """Start streaming on startup"""
+    # Start background tasks
+    asyncio.create_task(periodic_broadcast())
     await asyncio.sleep(2)  # Give server time to start
     subreddits = ["wholesomememes", "UpliftingNews", "happy", "MadeMeSmile", "todayilearned", "AskReddit", "funny"]
     await reddit_streamer.stream_subreddits(subreddits)
+
+async def periodic_broadcast():
+    """Periodically broadcast happiness updates"""
+    while True:
+        if manager.active_connections and total_posts_analyzed > 0:
+            message = {
+                "type": "happiness_update",
+                "data": {
+                    "current_happiness": current_happiness,
+                    "total_analyzed": total_posts_analyzed,
+                    "source_breakdown": source_breakdown.copy(),
+                    "recent_posts": recent_posts[:5]  # Send last 5 posts
+                }
+            }
+            await manager.broadcast(message)
+        await asyncio.sleep(5)  # Broadcast every 5 seconds
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
