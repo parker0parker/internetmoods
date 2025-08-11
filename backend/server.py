@@ -78,7 +78,7 @@ historical_data = deque(maxlen=1440)  # Store 24 hours of minute-by-minute data
 country_sentiment = {}  # Store country-specific sentiment data
 
 def generate_country_sentiment(base_happiness):
-    """Generate country-specific sentiment data with some variation"""
+    """Generate country-specific sentiment data with significant variation"""
     countries = [
         'United States', 'United Kingdom', 'Germany', 'France', 'Japan',
         'Australia', 'Brazil', 'India', 'China', 'Canada', 'Russia',
@@ -87,11 +87,37 @@ def generate_country_sentiment(base_happiness):
     ]
     
     country_data = {}
+    
+    # Create more interesting patterns - some countries consistently happier/sadder
+    country_modifiers = {
+        'Sweden': 15,      # Generally happier
+        'Netherlands': 12,  # Generally happier
+        'Canada': 10,      # Generally happier
+        'Australia': 8,    # Generally happier
+        'Germany': 5,      # Slightly happier
+        'United Kingdom': 2, # Slightly happier
+        'France': 0,       # Average
+        'United States': -2, # Slightly sadder
+        'Japan': -5,       # Slightly sadder
+        'Italy': -3,       # Slightly sadder
+        'Spain': 3,        # Slightly happier
+        'South Korea': -8,  # Generally sadder
+        'Brazil': 8,       # Generally happier
+        'Mexico': 6,       # Generally happier
+        'Argentina': -4,   # Slightly sadder
+        'India': -6,       # Generally sadder
+        'China': -10,      # Generally sadder
+        'Russia': -12,     # Generally sadder
+        'South Africa': -8, # Generally sadder
+        'Nigeria': -5,     # Slightly sadder
+    }
+    
     for country in countries:
-        # Add some random variation around the base happiness
-        variation = random.uniform(-15, 15)
-        country_happiness = max(0, min(100, base_happiness + variation))
-        country_data[country] = country_happiness
+        base_modifier = country_modifiers.get(country, 0)
+        # Add some random variation around the base + country modifier
+        random_variation = random.uniform(-8, 8)
+        country_happiness = max(5, min(95, base_happiness + base_modifier + random_variation))
+        country_data[country] = round(country_happiness, 1)
     
     return country_data
 
