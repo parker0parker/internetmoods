@@ -343,6 +343,7 @@ function App() {
   });
   const [recentPosts, setRecentPosts] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
 
   useEffect(() => {
     // Fetch initial data
@@ -373,7 +374,7 @@ function App() {
           current_happiness: message.data.current_happiness,
           total_posts_analyzed: message.data.total_analyzed,
           source_breakdown: message.data.source_breakdown,
-          happiness_trend: [...prev.happiness_trend.slice(-20), message.data.current_happiness]
+          happiness_trend: [...prev.happiness_trend.slice(-30), message.data.current_happiness]
         }));
         
         if (message.data.recent_posts) {
@@ -397,27 +398,45 @@ function App() {
     return 'despondent';
   };
 
+  const getSentimentColor = (happiness) => {
+    if (happiness >= 60) return '#00ff88';
+    if (happiness >= 40) return '#ffaa00';
+    return '#ff4466';
+  };
+
   return (
     <div className="app">
       <div className="header">
         <h1 className="main-title">How is the Internet Feeling?</h1>
-        <div className="connection-indicator">
-          <span className={`status-dot ${isConnected ? 'live' : 'offline'}`}></span>
-          {isConnected ? 'LIVE' : 'OFFLINE'}
+        <div className="header-controls">
+          <div className="connection-indicator">
+            <span className={`status-dot ${isConnected ? 'live' : 'offline'}`}></span>
+            {isConnected ? 'LIVE' : 'OFFLINE'}
+          </div>
+          <button 
+            className="about-button"
+            onClick={() => setShowAbout(true)}
+          >
+            ABOUT
+          </button>
         </div>
       </div>
 
       <div className="main-display">
         <div className="emoji-container">
           <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-            <ambientLight intensity={0.5} />
-            <pointLight position={[10, 10, 10]} intensity={1} />
+            <ambientLight intensity={0.6} />
+            <pointLight position={[10, 10, 10]} intensity={1.2} />
+            <pointLight position={[-10, -10, 10]} intensity={0.8} />
             <GlassEmojiFace happiness={happinessData.current_happiness} />
           </Canvas>
         </div>
         
         <div className="sentiment-readout">
-          <div className="happiness-percentage">
+          <div 
+            className="happiness-percentage"
+            style={{ color: getSentimentColor(happinessData.current_happiness) }}
+          >
             {happinessData.current_happiness.toFixed(1)}%
           </div>
           <div className="sentiment-word">
@@ -445,7 +464,7 @@ function App() {
         />
       </div>
 
-      {happinessData.happiness_trend.length > 0 && (
+      {happinessData.happiness_trend.length > 5 && (
         <div className="chart-section">
           <JoyDivisionChart 
             scores={happinessData.happiness_trend} 
@@ -468,6 +487,11 @@ function App() {
           </div>
         )}
       </div>
+
+      <AboutSection 
+        isVisible={showAbout} 
+        onClose={() => setShowAbout(false)} 
+      />
     </div>
   );
 }
