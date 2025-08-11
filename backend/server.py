@@ -65,9 +65,10 @@ manager = ConnectionManager()
 
 # Global variables for happiness tracking
 happiness_scores = deque(maxlen=100)  # Store last 100 scores
-current_happiness = 0.0
+current_happiness = 50.0  # Start with neutral
 total_posts_analyzed = 0
 source_breakdown = {"reddit": 0, "mastodon": 0}
+recent_posts = []  # Store recent posts for display
 
 # Define Models
 class HappinessData(BaseModel):
