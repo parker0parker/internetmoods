@@ -14,9 +14,7 @@ const WireframeGlobe = ({ happiness, countrySentiment }) => {
   const meshRef = useRef();
   const groupRef = useRef();
   const linesRef = useRef();
-  const [hoveredCountry, setHoveredCountry] = useState(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
+  
   useFrame((state) => {
     if (groupRef.current) {
       groupRef.current.rotation.y = state.clock.elapsedTime * 0.1;
@@ -25,17 +23,33 @@ const WireframeGlobe = ({ happiness, countrySentiment }) => {
   });
 
   const getSentimentColor = (sentiment) => {
-    if (sentiment >= 60) return '#00ff88'; // Happy - green
-    if (sentiment >= 40) return '#ffaa00'; // Neutral - orange  
-    return '#ff4466'; // Sad - red
+    if (sentiment >= 70) return '#00ff88'; // Very happy - bright green
+    if (sentiment >= 60) return '#44ff66'; // Happy - green
+    if (sentiment >= 50) return '#ffaa00'; // Neutral - orange
+    if (sentiment >= 40) return '#ff6644'; // Sad - red-orange
+    return '#ff4466'; // Very sad - red
   };
 
   const getSentimentText = (sentiment) => {
-    if (sentiment >= 70) return 'euphoric';
-    if (sentiment >= 60) return 'joyful';
-    if (sentiment >= 50) return 'content';
+    if (sentiment >= 95) return 'ecstatic';
+    if (sentiment >= 90) return 'euphoric';
+    if (sentiment >= 85) return 'elated';
+    if (sentiment >= 80) return 'jubilant';
+    if (sentiment >= 75) return 'joyful';
+    if (sentiment >= 70) return 'cheerful';
+    if (sentiment >= 65) return 'upbeat';
+    if (sentiment >= 60) return 'optimistic';
+    if (sentiment >= 55) return 'content';
+    if (sentiment >= 50) return 'neutral';
+    if (sentiment >= 45) return 'subdued';
     if (sentiment >= 40) return 'melancholic';
+    if (sentiment >= 35) return 'gloomy';
     if (sentiment >= 30) return 'somber';
+    if (sentiment >= 25) return 'dejected';
+    if (sentiment >= 20) return 'despairing';
+    if (sentiment >= 15) return 'anguished';
+    if (sentiment >= 10) return 'tormented';
+    if (sentiment >= 5) return 'devastated';
     return 'despondent';
   };
 
@@ -44,56 +58,6 @@ const WireframeGlobe = ({ happiness, countrySentiment }) => {
     const geometry = new THREE.SphereGeometry(2, 24, 16);
     const edges = new THREE.EdgesGeometry(geometry);
     return edges;
-  };
-
-  // Create interactive country regions
-  const CountryRegion = ({ position, sentiment, name }) => {
-    const meshRef = useRef();
-    
-    const handlePointerOver = (event) => {
-      event.stopPropagation();
-      setHoveredCountry({ name, sentiment });
-      document.body.style.cursor = 'pointer';
-    };
-
-    const handlePointerOut = (event) => {
-      event.stopPropagation();
-      setHoveredCountry(null);
-      document.body.style.cursor = 'default';
-    };
-
-    const handlePointerMove = (event) => {
-      setMousePosition({ x: event.clientX, y: event.clientY });
-    };
-
-    return (
-      <mesh 
-        ref={meshRef}
-        position={position}
-        onPointerOver={handlePointerOver}
-        onPointerOut={handlePointerOut}
-        onPointerMove={handlePointerMove}
-      >
-        <sphereGeometry args={[hoveredCountry?.name === name ? 0.08 : 0.05, 8, 8]} />
-        <meshBasicMaterial 
-          color={getSentimentColor(sentiment)} 
-          transparent={true}
-          opacity={hoveredCountry?.name === name ? 1.0 : 0.8}
-        />
-        
-        {/* Glow effect on hover */}
-        {hoveredCountry?.name === name && (
-          <mesh>
-            <sphereGeometry args={[0.12, 8, 8]} />
-            <meshBasicMaterial 
-              color={getSentimentColor(sentiment)} 
-              transparent={true}
-              opacity={0.2}
-            />
-          </mesh>
-        )}
-      </mesh>
-    );
   };
 
   // Major country positions with more countries
@@ -121,92 +85,69 @@ const WireframeGlobe = ({ happiness, countrySentiment }) => {
   };
 
   return (
-    <>
-      <group ref={groupRef}>
-        <Float speed={0.5} rotationIntensity={0.02} floatIntensity={0.1}>
-          {/* Main wireframe sphere */}
-          <lineSegments ref={linesRef}>
-            <primitive object={createWireframeSphere()} />
-            <lineBasicMaterial color="#e3e3e3" opacity={0.3} transparent={true} />
-          </lineSegments>
+    <group ref={groupRef}>
+      <Float speed={0.5} rotationIntensity={0.02} floatIntensity={0.1}>
+        {/* Main wireframe sphere */}
+        <lineSegments ref={linesRef}>
+          <primitive object={createWireframeSphere()} />
+          <lineBasicMaterial color="#e3e3e3" opacity={0.3} transparent={true} />
+        </lineSegments>
 
-          {/* Additional grid lines for Joy Division effect */}
-          {Array.from({ length: 12 }, (_, i) => (
-            <mesh key={i} rotation={[0, 0, (i * Math.PI) / 6]}>
-              <torusGeometry args={[2, 0.002, 2, 50, Math.PI]} />
-              <meshBasicMaterial 
-                color="#e3e3e3" 
-                opacity={0.2} 
-                transparent={true} 
-              />
-            </mesh>
-          ))}
-
-          {/* Latitude lines */}
-          {Array.from({ length: 6 }, (_, i) => (
-            <mesh key={`lat-${i}`} rotation={[Math.PI/2, 0, 0]} position={[0, -1 + (i * 0.4), 0]}>
-              <torusGeometry args={[2 * Math.cos((i * Math.PI) / 6), 0.002, 2, 50]} />
-              <meshBasicMaterial 
-                color="#e3e3e3" 
-                opacity={0.2} 
-                transparent={true} 
-              />
-            </mesh>
-          ))}
-
-          {/* Country sentiment dots */}
-          {Object.entries(countryPositions).map(([country, position]) => {
-            const sentiment = countrySentiment[country] || happiness;
-            return (
-              <CountryRegion
-                key={country}
-                position={position}
-                sentiment={sentiment}
-                name={country}
-              />
-            );
-          })}
-
-          {/* Subtle glow effect */}
-          <mesh>
-            <sphereGeometry args={[2.1, 32, 32]} />
+        {/* Additional grid lines for Joy Division effect */}
+        {Array.from({ length: 12 }, (_, i) => (
+          <mesh key={i} rotation={[0, 0, (i * Math.PI) / 6]}>
+            <torusGeometry args={[2, 0.002, 2, 50, Math.PI]} />
             <meshBasicMaterial 
-              color={getSentimentColor(happiness)} 
+              color="#e3e3e3" 
+              opacity={0.2} 
               transparent={true} 
-              opacity={0.05}
-              side={THREE.BackSide}
             />
           </mesh>
-        </Float>
-      </group>
-      
-      {/* Hover tooltip */}
-      {hoveredCountry && (
-        <div 
-          className="globe-tooltip"
-          style={{
-            position: 'fixed',
-            left: mousePosition.x + 15,
-            top: mousePosition.y - 10,
-            zIndex: 1000,
-            pointerEvents: 'none'
-          }}
-        >
-          <div className="tooltip-country">{hoveredCountry.name}</div>
-          <div className="tooltip-sentiment">
-            <span 
-              className="tooltip-percentage"
-              style={{ color: getSentimentColor(hoveredCountry.sentiment) }}
+        ))}
+
+        {/* Latitude lines */}
+        {Array.from({ length: 6 }, (_, i) => (
+          <mesh key={`lat-${i}`} rotation={[Math.PI/2, 0, 0]} position={[0, -1 + (i * 0.4), 0]}>
+            <torusGeometry args={[2 * Math.cos((i * Math.PI) / 6), 0.002, 2, 50]} />
+            <meshBasicMaterial 
+              color="#e3e3e3" 
+              opacity={0.2} 
+              transparent={true} 
+            />
+          </mesh>
+        ))}
+
+        {/* Country sentiment dots */}
+        {Object.entries(countryPositions).map(([country, position]) => {
+          const sentiment = countrySentiment[country] || happiness;
+          return (
+            <mesh 
+              key={country}
+              position={position}
+              userData={{ country, sentiment }}
             >
-              {hoveredCountry.sentiment.toFixed(1)}%
-            </span>
-            <span className="tooltip-mood">
-              {getSentimentText(hoveredCountry.sentiment)}
-            </span>
-          </div>
-        </div>
-      )}
-    </>
+              <sphereGeometry args={[0.06, 8, 8]} />
+              <meshBasicMaterial 
+                color={getSentimentColor(sentiment)} 
+                transparent={true}
+                opacity={0.9}
+              />
+            </mesh>
+          );
+        })}
+
+        {/* Subtle glow effect */}
+        <mesh>
+          <sphereGeometry args={[2.1, 32, 32]} />
+          <meshBasicMaterial 
+            color={getSentimentColor(happiness)} 
+            transparent={true} 
+            opacity={0.05}
+            side={THREE.BackSide}
+          />
+        </mesh>
+      </Float>
+    </group>
   );
 };
 
