@@ -423,7 +423,8 @@ async def periodic_broadcast():
                     "current_happiness": current_happiness,
                     "total_analyzed": total_posts_analyzed,
                     "source_breakdown": source_breakdown.copy(),
-                    "recent_posts": recent_posts[:5]  # Send last 5 posts
+                    "country_sentiment": country_sentiment.copy(),
+                    "recent_posts": recent_posts[:8]  # Send last 8 posts
                 }
             }
             await manager.broadcast(message)
