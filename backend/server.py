@@ -320,9 +320,13 @@ async def get_recent_posts(limit: int = 20):
 
 @api_router.post("/start-streaming")
 async def start_streaming():
-    """Start the data streaming"""
+    """Start the multi-source data streaming"""
     await data_streamer.stream_all_sources()
-    return {"message": "Data streaming started from all sources"}
+    return {
+        "message": "Multi-source streaming started", 
+        "sources": ["reddit", "mastodon", "google_trends"],
+        "collection_interval": "10 seconds"
+    }
 
 # WebSocket endpoint
 @app.websocket("/api/ws")
