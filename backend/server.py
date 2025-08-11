@@ -224,19 +224,26 @@ class RealDataStreamer:
                     cycle_count += 1
                     print(f"Data collection cycle {cycle_count}")
                     
-                    # Rotate through different data sources
-                    if cycle_count % 3 == 1:
-                        # Reddit data
+                    # Rotate through different data sources (7 sources now)
+                    source_rotation = cycle_count % 7
+                    
+                    if source_rotation == 0:
                         self._collect_reddit_data()
-                    elif cycle_count % 3 == 2:
-                        # Mastodon data 
+                    elif source_rotation == 1:
                         self._collect_mastodon_data()
-                    else:
-                        # Google Trends data
+                    elif source_rotation == 2:
                         self._collect_trends_data()
+                    elif source_rotation == 3:
+                        self._collect_youtube_data()
+                    elif source_rotation == 4:
+                        self._collect_news_data()
+                    elif source_rotation == 5:
+                        self._collect_twitter_data()
+                    else:
+                        self._collect_forums_data()
                     
                     # Wait between collections
-                    time.sleep(10)  # Collect every 10 seconds
+                    time.sleep(8)  # Collect every 8 seconds with more sources
                     
             except Exception as e:
                 print(f"Data streaming error: {e}")
