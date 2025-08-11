@@ -357,6 +357,126 @@ class RealDataStreamer:
         except Exception as e:
             print(f"Google Trends collection error: {e}")
     
+    def _collect_youtube_data(self):
+        """Collect YouTube comments data"""
+        try:
+            comments = youtube_collector.get_trending_comments()
+            
+            for comment in comments:
+                if not comment.get('text'):
+                    continue
+                    
+                sentiment_data = analyze_sentiment(comment['text'], 'youtube')
+                
+                post_data = {
+                    "id": str(uuid.uuid4()),
+                    "source": "youtube",
+                    "text": comment['text'][:300] + "..." if len(comment['text']) > 300 else comment['text'],
+                    "sentiment_score": sentiment_data["happiness_score"],
+                    "sentiment_label": sentiment_data["label"],
+                    "confidence": sentiment_data["confidence"],
+                    "video_title": comment.get('video_title', 'Unknown'),
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+                
+                update_happiness_index(sentiment_data, "youtube", post_data)
+                print(f"YouTube {comment.get('video_title', 'Video')}: {sentiment_data['happiness_score']:.1f}% ({sentiment_data['label']})")
+                
+                time.sleep(1)
+                
+        except Exception as e:
+            print(f"YouTube collection error: {e}")
+    
+    def _collect_news_data(self):
+        """Collect news headlines data"""
+        try:
+            headlines = news_collector.get_news_headlines()
+            
+            for headline in headlines:
+                if not headline.get('text'):
+                    continue
+                    
+                sentiment_data = analyze_sentiment(headline['text'], 'news')
+                
+                post_data = {
+                    "id": str(uuid.uuid4()),
+                    "source": "news",
+                    "text": headline['text'],
+                    "sentiment_score": sentiment_data["happiness_score"],
+                    "sentiment_label": sentiment_data["label"],
+                    "confidence": sentiment_data["confidence"],
+                    "category": headline.get('category', 'general'),
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+                
+                update_happiness_index(sentiment_data, "news", post_data)
+                print(f"News {headline.get('category', 'General')}: {sentiment_data['happiness_score']:.1f}% ({sentiment_data['label']})")
+                
+                time.sleep(1)
+                
+        except Exception as e:
+            print(f"News collection error: {e}")
+    
+    def _collect_twitter_data(self):
+        """Collect Twitter/X data"""
+        try:
+            tweets = twitter_collector.get_public_tweets()
+            
+            for tweet in tweets:
+                if not tweet.get('text'):
+                    continue
+                    
+                sentiment_data = analyze_sentiment(tweet['text'], 'twitter')
+                
+                post_data = {
+                    "id": str(uuid.uuid4()),
+                    "source": "twitter",
+                    "text": tweet['text'][:300] + "..." if len(tweet['text']) > 300 else tweet['text'],
+                    "sentiment_score": sentiment_data["happiness_score"],
+                    "sentiment_label": sentiment_data["label"],
+                    "confidence": sentiment_data["confidence"],
+                    "hashtags": tweet.get('hashtags', []),
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+                
+                update_happiness_index(sentiment_data, "twitter", post_data)
+                print(f"Twitter: {sentiment_data['happiness_score']:.1f}% ({sentiment_data['label']})")
+                
+                time.sleep(2)
+                
+        except Exception as e:
+            print(f"Twitter collection error: {e}")
+    
+    def _collect_forums_data(self):
+        """Collect public forums data"""
+        try:
+            posts = forums_collector.get_forum_posts()
+            
+            for post in posts:
+                if not post.get('text'):
+                    continue
+                    
+                sentiment_data = analyze_sentiment(post['text'], 'forums')
+                
+                post_data = {
+                    "id": str(uuid.uuid4()),
+                    "source": "forums",
+                    "text": post['text'][:300] + "..." if len(post['text']) > 300 else post['text'],
+                    "sentiment_score": sentiment_data["happiness_score"],
+                    "sentiment_label": sentiment_data["label"],
+                    "confidence": sentiment_data["confidence"],
+                    "forum": post.get('forum', 'general'),
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+                
+                update_happiness_index(sentiment_data, "forums", post_data)
+                print(f"Forums {post.get('forum', 'General')}: {sentiment_data['happiness_score']:.1f}% ({sentiment_data['label']})")
+                
+                time.sleep(1)
+                
+        except Exception as e:
+            print(f"Forums collection error: {e}")
+    
     def stop_streaming(self):
         """Stop the data streaming"""
         self.running = False
