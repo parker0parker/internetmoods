@@ -11,19 +11,17 @@ from typing import List, Dict, Any
 import uuid
 from datetime import datetime, timedelta
 import json
-import requests
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-from textblob import TextBlob
-import statistics
 from collections import deque
 import threading
 import time
 import random
 import re
-from pytrends.request import TrendReq
-from mastodon import Mastodon
-import json
-from urllib.parse import quote
+import statistics
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
+# Import our custom modules
+from data_collectors import reddit_collector, mastodon_collector, google_trends_collector
+from advanced_sentiment import advanced_analyzer
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
