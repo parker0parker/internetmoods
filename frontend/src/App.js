@@ -248,8 +248,8 @@ const WireframeGlobe = ({ happiness, countrySentiment, onCountryHover }) => {
   );
 };
 
-// Improved Joy Division chart with actual data representation
-const JoyDivisionChart = ({ scores, title }) => {
+// Happiness Timeline Chart with Clean Line Graph
+const HappinessTimelineChart = ({ scores, title }) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -264,69 +264,134 @@ const JoyDivisionChart = ({ scores, title }) => {
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, width/2, height/2);
 
-    // Create meaningful waves based on happiness data
-    const waves = Math.min(15, scores.length);
-    const waveHeight = height / 2 / (waves + 1);
+    // Chart dimensions
+    const padding = 40;
+    const chartWidth = width/2 - padding * 2;
+    const chartHeight = height/2 - padding * 2;
     
-    ctx.lineWidth = 1.5;
-
-    for (let i = 0; i < waves; i++) {
+    // Draw grid lines
+    ctx.strokeStyle = '#333333';
+    ctx.lineWidth = 0.5;
+    ctx.globalAlpha = 0.3;
+    
+    // Horizontal grid lines (happiness levels)
+    for (let i = 0; i <= 10; i++) {
+      const y = padding + (i / 10) * chartHeight;
       ctx.beginPath();
-      const dataPoint = scores[Math.floor((i / waves) * scores.length)] || 50;
-      const intensity = Math.abs(dataPoint - 50) / 50; // 0 to 1
-      
-      // Color based on sentiment with pops of color
-      if (dataPoint >= 60) {
-        ctx.strokeStyle = '#00ff88'; // Happy - green
-      } else if (dataPoint <= 40) {
-        ctx.strokeStyle = '#ff4466'; // Sad - red
-      } else {
-        ctx.strokeStyle = '#ffaa00'; // Neutral - orange
-      }
-      
-      // Adjust opacity based on intensity
-      ctx.globalAlpha = 0.3 + (intensity * 0.7);
-      
-      const baseY = (i + 1) * waveHeight + 20;
-      const points = 120;
-      
-      for (let x = 0; x < points; x++) {
-        const xPos = (x / points) * (width / 2);
-        
-        // Create wave based on actual data trends
-        let wave = 0;
-        
-        if (x < scores.length) {
-          const currentScore = scores[x] || 50;
-          const normalizedScore = (currentScore - 50) / 50; // -1 to 1
-          wave = normalizedScore * intensity * 30;
-        }
-        
-        // Add some organic wave pattern
-        const organicWave = Math.sin(x * 0.1 + i * 0.5) * intensity * 8;
-        const finalY = baseY - wave - organicWave;
-        
-        if (x === 0) {
-          ctx.moveTo(xPos, finalY);
-        } else {
-          ctx.lineTo(xPos, finalY);
-        }
-      }
+      ctx.moveTo(padding, y);
+      ctx.lineTo(padding + chartWidth, y);
+      ctx.stroke();
+    }
+    
+    // Vertical grid lines (time intervals)
+    const timeIntervals = Math.min(20, scores.length);
+    for (let i = 0; i <= timeIntervals; i++) {
+      const x = padding + (i / timeIntervals) * chartWidth;
+      ctx.beginPath();
+      ctx.moveTo(x, padding);
+      ctx.lineTo(x, padding + chartHeight);
       ctx.stroke();
     }
     
     ctx.globalAlpha = 1;
+    
+    // Draw happiness line
+    if (scores.length > 1) {
+      ctx.strokeStyle = '#e3e3e3';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      
+      const maxScore = Math.max(...scores);
+      const minScore = Math.min(...scores);
+      const scoreRange = maxScore - minScore || 1;
+      
+      scores.forEach((score, index) => {
+        const x = padding + (index / (scores.length - 1)) * chartWidth;
+        // Map score to chart height (inverted because canvas y increases downward)
+        const normalizedScore = (score - minScore) / scoreRange;
+        const y = padding + chartHeight - (normalizedScore * chartHeight);
+        
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      
+      ctx.stroke();
+      
+      // Add glow effect to the line
+      ctx.shadowColor = '#e3e3e3';
+      ctx.shadowBlur = 3;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      
+      // Draw data points
+      ctx.fillStyle = '#e3e3e3';
+      scores.forEach((score, index) => {
+        const x = padding + (index / (scores.length - 1)) * chartWidth;
+        const normalizedScore = (score - minScore) / scoreRange;
+        const y = padding + chartHeight - (normalizedScore * chartHeight);
+        
+        ctx.beginPath();
+        ctx.arc(x, y, 2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+    
+    // Draw labels
+    ctx.fillStyle = '#666666';
+    ctx.font = '10px "Noto Sans Mono"';
+    ctx.textAlign = 'right';
+    
+    // Y-axis labels (happiness percentages)
+    for (let i = 0; i <= 10; i++) {
+      const y = padding + (i / 10) * chartHeight;
+      const value = Math.round(100 - (i * 10)); // Inverted because higher happiness is at top
+      ctx.fillText(`${value}%`, padding - 10, y + 3);
+    }
+    
+    // Current happiness indicator
+    if (scores.length > 0) {
+      const currentScore = scores[scores.length - 1];
+      const normalizedScore = scores.length > 1 ? (currentScore - minScore) / scoreRange : 0.5;
+      const currentY = padding + chartHeight - (normalizedScore * chartHeight);
+      
+      // Draw current level line
+      ctx.strokeStyle = getSentimentColor(currentScore);
+      ctx.lineWidth = 1;
+      ctx.setLineDash([5, 5]);
+      ctx.beginPath();
+      ctx.moveTo(padding, currentY);
+      ctx.lineTo(padding + chartWidth, currentY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      // Current value label
+      ctx.fillStyle = getSentimentColor(currentScore);
+      ctx.textAlign = 'left';
+      ctx.font = '12px "Noto Sans Mono"';
+      ctx.fillText(`${currentScore.toFixed(1)}%`, padding + chartWidth + 10, currentY + 4);
+    }
+    
   }, [scores]);
 
+  // Helper function for sentiment colors
+  const getSentimentColor = (happiness) => {
+    if (happiness >= 70) return '#00ff88';
+    if (happiness >= 60) return '#44ff66';
+    if (happiness >= 50) return '#ffaa00';
+    if (happiness >= 40) return '#ff6644';
+    return '#ff4466';
+  };
+
   return (
-    <div className="joy-chart">
+    <div className="happiness-chart">
       <div className="chart-title">{title}</div>
       <div className="chart-legend">
-        <span className="legend-item happy">■ positive sentiment</span>
-        <span className="legend-item neutral">■ neutral sentiment</span>
-        <span className="legend-item sad">■ negative sentiment</span>
+        <span className="legend-item" style={{ color: '#e3e3e3' }}>■ happiness level over time</span>
       </div>
-      <canvas ref={canvasRef} className="joy-canvas" />
+      <canvas ref={canvasRef} className="happiness-canvas" />
     </div>
   );
 };
