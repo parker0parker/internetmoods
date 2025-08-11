@@ -253,8 +253,7 @@ async def get_happiness_status():
 @api_router.get("/recent-posts")
 async def get_recent_posts(limit: int = 20):
     """Get recent analyzed posts"""
-    posts = await db.happiness_data.find().sort("timestamp", -1).limit(limit).to_list(limit)
-    return [HappinessData(**post) for post in posts]
+    return recent_posts[:limit]
 
 @api_router.post("/start-streaming")
 async def start_streaming():
