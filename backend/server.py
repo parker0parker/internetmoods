@@ -135,7 +135,7 @@ def analyze_sentiment(text: str, source: str = "unknown") -> Dict[str, Any]:
 
 def update_happiness_index(sentiment_data: Dict[str, Any], source: str, post_data: dict = None):
     """Update the global happiness index with enhanced tracking"""
-    global current_happiness, total_posts_analyzed, recent_posts, historical_data
+    global current_happiness, total_posts_analyzed, recent_posts, historical_data, country_sentiment
     
     sentiment_score = sentiment_data.get("happiness_score", 50.0)
     
@@ -157,13 +157,17 @@ def update_happiness_index(sentiment_data: Dict[str, Any], source: str, post_dat
     if happiness_scores:
         current_happiness = statistics.mean(happiness_scores)
     
+    # Update country sentiment data
+    country_sentiment = generate_country_sentiment(current_happiness)
+    
     # Update historical data (minute-by-minute)
     current_time = datetime.utcnow()
     historical_data.append({
         "timestamp": current_time.isoformat(),
         "happiness": current_happiness,
         "posts_count": total_posts_analyzed,
-        "source_breakdown": source_breakdown.copy()
+        "source_breakdown": source_breakdown.copy(),
+        "country_sentiment": country_sentiment.copy()
     })
 
 class RealDataStreamer:
