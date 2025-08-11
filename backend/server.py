@@ -332,7 +332,8 @@ async def get_happiness_status():
         "current_happiness": round(current_happiness, 2),
         "total_posts_analyzed": total_posts_analyzed,
         "source_breakdown": source_breakdown,
-        "happiness_trend": list(happiness_scores)[-10:],  # Last 10 scores
+        "happiness_trend": list(happiness_scores)[-20:],  # Last 20 scores
+        "country_sentiment": country_sentiment,
         "last_updated": datetime.utcnow().isoformat()
     }
 
