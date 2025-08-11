@@ -391,18 +391,25 @@ function App() {
             icon="🤖"
           />
           <StatCard 
-            title="Data Sources"
-            value="7"
-            subtitle="Active subreddits"
-            icon="🔗"
+            title="Mastodon Posts"
+            value={happinessData.source_breakdown.mastodon.toLocaleString()}
+            subtitle="From instances"
+            icon="🐘"
           />
           <StatCard 
-            title="Update Rate"
-            value="~30s"
-            subtitle="Refresh interval"
-            icon="⚡"
+            title="Trends Data"
+            value={happinessData.source_breakdown.google_trends.toLocaleString()}
+            subtitle="From Google Trends"
+            icon="📈"
           />
         </div>
+
+        <div className="analytics-section">
+          <SourceBreakdown sourceData={happinessData.source_breakdown} />
+          <SentimentDistribution posts={recentPosts} />
+        </div>
+
+        <RealTimeStats data={happinessData} />
 
         {happinessData.happiness_trend.length > 0 && (
           <div className="trend-section">
