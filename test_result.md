@@ -254,3 +254,5 @@ test_plan:
 agent_communication:
   - agent: "testing"
     message: "Comprehensive backend testing completed successfully. All 10 backend tasks are working correctly with 100% test success rate (12/12 tests passed). The Internet Happiness Index backend is fully functional with real-time data generation, WebSocket streaming, proper sentiment analysis, and all API endpoints working as expected. System is ready for production use."
+  - agent: "main"
+    message: "User reported Reddit data collection issue and asked about mobile compatibility. Investigation shows: 1) Reddit API returning 403 errors due to blocking public API access, 2) Mobile compatibility is working well with responsive layout, 3) Other data sources (Mastodon, Google Trends, YouTube, News, Twitter, Forums) are working correctly. Need to fix Reddit collector issue."
