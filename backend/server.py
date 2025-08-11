@@ -127,75 +127,80 @@ def update_happiness_index(sentiment_score: float, source: str):
 
 class RedditStreamer:
     def __init__(self):
-        # Initialize Reddit without credentials (read-only access)
-        self.reddit = praw.Reddit(
-            client_id="dummy",
-            client_secret="dummy", 
-            user_agent="HappinessIndex/1.0"
-        )
-        self.reddit.read_only = True
+        # Mock Reddit data - no praw dependency
+        self.mock_posts = [
+            "Today I learned something amazing that made me smile!",
+            "Just had the best day ever with my family.",
+            "Found a $20 bill on the ground and returned it to the owner.",
+            "My dog learned a new trick today and I'm so proud!",
+            "Helped an elderly person cross the street today.",
+            "Got a promotion at work after months of hard work!",
+            "Made a new friend at the coffee shop today.",
+            "Watched a beautiful sunset that took my breath away.",
+            "My garden is finally blooming after weeks of care.",
+            "Received an unexpected compliment that made my day."
+        ]
         
     async def stream_subreddits(self, subreddits: List[str]):
-        """Stream from multiple subreddits"""
+        """Stream mock data from subreddits"""
         def reddit_stream():
             try:
-                # Use a simple approach to get recent posts from subreddits
-                for subreddit_name in subreddits:
-                    try:
-                        subreddit = self.reddit.subreddit(subreddit_name)
-                        # Get recent posts
-                        for post in subreddit.new(limit=5):
-                            if post.selftext and len(post.selftext) > 10:
-                                sentiment = analyze_sentiment(post.selftext)
-                                
-                                # Create happiness data
-                                happiness_data = HappinessData(
-                                    source="reddit",
-                                    text=post.selftext[:200] + "..." if len(post.selftext) > 200 else post.selftext,
-                                    sentiment_score=sentiment["happiness_score"],
-                                    sentiment_label=sentiment["label"],
-                                    subreddit=subreddit_name
-                                )
-                                
-                                # Update global happiness index
-                                update_happiness_index(sentiment["happiness_score"], "reddit")
-                                
-                                # Create broadcast message
-                                message = {
-                                    "type": "new_post",
-                                    "data": {
-                                        "id": happiness_data.id,
-                                        "source": happiness_data.source,
-                                        "text": happiness_data.text,
-                                        "sentiment_score": happiness_data.sentiment_score,
-                                        "sentiment_label": happiness_data.sentiment_label,
-                                        "subreddit": happiness_data.subreddit,
-                                        "timestamp": happiness_data.timestamp.isoformat(),
-                                        "current_happiness": current_happiness,
-                                        "total_analyzed": total_posts_analyzed,
-                                        "source_breakdown": source_breakdown.copy()
-                                    }
+                # Generate mock posts continuously
+                while True:
+                    for subreddit_name in subreddits:
+                        try:
+                            # Generate random mock post
+                            mock_text = random.choice(self.mock_posts)
+                            sentiment = analyze_sentiment(mock_text)
+                            
+                            # Create happiness data
+                            happiness_data = HappinessData(
+                                source="reddit",
+                                text=mock_text,
+                                sentiment_score=sentiment["happiness_score"],
+                                sentiment_label=sentiment["label"],
+                                subreddit=subreddit_name
+                            )
+                            
+                            # Update global happiness index
+                            update_happiness_index(sentiment["happiness_score"], "reddit")
+                            
+                            # Create broadcast message
+                            message = {
+                                "type": "new_post",
+                                "data": {
+                                    "id": happiness_data.id,
+                                    "source": happiness_data.source,
+                                    "text": happiness_data.text,
+                                    "sentiment_score": happiness_data.sentiment_score,
+                                    "sentiment_label": happiness_data.sentiment_label,
+                                    "subreddit": happiness_data.subreddit,
+                                    "timestamp": happiness_data.timestamp.isoformat(),
+                                    "current_happiness": current_happiness,
+                                    "total_analyzed": total_posts_analyzed,
+                                    "source_breakdown": source_breakdown.copy()
                                 }
-                                
-                                # Broadcast to all connected clients
-                                asyncio.run_coroutine_threadsafe(
-                                    manager.broadcast(message), 
-                                    asyncio.get_event_loop()
-                                )
-                                
-                                # Store in database
-                                asyncio.run_coroutine_threadsafe(
-                                    db.happiness_data.insert_one(happiness_data.dict()),
-                                    asyncio.get_event_loop()
-                                )
-                                
-                                time.sleep(2)  # Rate limiting
-                                
-                    except Exception as e:
-                        print(f"Error with subreddit {subreddit_name}: {e}")
+                            }
+                            
+                            # Broadcast to all connected clients
+                            asyncio.run_coroutine_threadsafe(
+                                manager.broadcast(message), 
+                                asyncio.get_event_loop()
+                            )
+                            
+                            # Store in database
+                            asyncio.run_coroutine_threadsafe(
+                                db.happiness_data.insert_one(happiness_data.dict()),
+                                asyncio.get_event_loop()
+                            )
+                            
+                            time.sleep(3)  # Rate limiting
+                            
+                        except Exception as e:
+                            print(f"Error with subreddit {subreddit_name}: {e}")
+                            
+                        time.sleep(2)  # Delay between subreddits
                         
-                    time.sleep(5)  # Delay between subreddits
-                    
             except Exception as e:
                 print(f"Reddit streaming error: {e}")
         
