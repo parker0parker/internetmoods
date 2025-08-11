@@ -433,6 +433,11 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 async def startup_event():
     """Start streaming on startup"""
+    global country_sentiment
+    
+    # Initialize country sentiment data
+    country_sentiment = generate_country_sentiment(current_happiness)
+    
     # Start background tasks
     asyncio.create_task(periodic_broadcast())
     await asyncio.sleep(3)  # Give server time to start
