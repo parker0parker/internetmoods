@@ -13,11 +13,17 @@ from datetime import datetime, timedelta
 import json
 import requests
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from textblob import TextBlob
 import statistics
 from collections import deque
 import threading
 import time
 import random
+import re
+from pytrends.request import TrendReq
+from mastodon import Mastodon
+import json
+from urllib.parse import quote
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
