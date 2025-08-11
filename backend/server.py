@@ -114,13 +114,18 @@ def analyze_sentiment(text: str) -> Dict[str, Any]:
         }
     }
 
-def update_happiness_index(sentiment_score: float, source: str):
+def update_happiness_index(sentiment_score: float, source: str, post_data: dict = None):
     """Update the global happiness index"""
-    global current_happiness, total_posts_analyzed
+    global current_happiness, total_posts_analyzed, recent_posts
     
     happiness_scores.append(sentiment_score)
     source_breakdown[source] += 1
     total_posts_analyzed += 1
+    
+    # Add to recent posts
+    if post_data:
+        recent_posts.insert(0, post_data)
+        recent_posts = recent_posts[:20]  # Keep only last 20 posts
     
     # Calculate rolling average
     if happiness_scores:
