@@ -188,31 +188,44 @@ const MinimalStat = ({ label, value, sublabel }) => (
   </div>
 );
 
-// Minimal post card
+// Minimal post card with color accents
 const PostCard = ({ post }) => {
-  const getSentimentIndicator = (label) => {
-    switch(label) {
-      case 'positive': return '+';
-      case 'negative': return '−';
-      default: return '○';
+  const getSentimentProps = (label, score) => {
+    if (label === 'positive') {
+      return { symbol: '+', color: '#00ff88', bgColor: 'rgba(0, 255, 136, 0.05)' };
+    } else if (label === 'negative') {
+      return { symbol: '−', color: '#ff4466', bgColor: 'rgba(255, 68, 102, 0.05)' };
+    } else {
+      return { symbol: '○', color: '#ffaa00', bgColor: 'rgba(255, 170, 0, 0.05)' };
     }
   };
 
-  const getSourceIcon = (source) => {
+  const getSourceProps = (source) => {
     switch(source) {
-      case 'reddit': return 'R';
-      case 'mastodon': return 'M';
-      case 'google_trends': return 'T';
-      default: return '•';
+      case 'reddit': return { icon: 'R', color: '#00ff88' };
+      case 'mastodon': return { icon: 'M', color: '#ff4466' };
+      case 'google_trends': return { icon: 'T', color: '#ffaa00' };
+      default: return { icon: '•', color: '#e3e3e3' };
     }
   };
+
+  const sentimentProps = getSentimentProps(post.sentiment_label, post.sentiment_score);
+  const sourceProps = getSourceProps(post.source);
 
   return (
-    <div className="post-card">
+    <div className="post-card" style={{ backgroundColor: sentimentProps.bgColor }}>
       <div className="post-header">
-        <span className="post-source">{getSourceIcon(post.source)}</span>
-        <span className="post-sentiment">
-          {getSentimentIndicator(post.sentiment_label)} {post.sentiment_score.toFixed(0)}
+        <span 
+          className="post-source" 
+          style={{ borderColor: sourceProps.color, color: sourceProps.color }}
+        >
+          {sourceProps.icon}
+        </span>
+        <span 
+          className="post-sentiment" 
+          style={{ color: sentimentProps.color }}
+        >
+          {sentimentProps.symbol} {post.sentiment_score.toFixed(0)}
         </span>
       </div>
       <div className="post-text">{post.text}</div>
@@ -222,6 +235,100 @@ const PostCard = ({ post }) => {
           hour: '2-digit', 
           minute: '2-digit' 
         })}
+      </div>
+    </div>
+  );
+};
+
+// About Section Component
+const AboutSection = ({ isVisible, onClose }) => {
+  if (!isVisible) return null;
+
+  return (
+    <div className="about-overlay" onClick={onClose}>
+      <div className="about-content" onClick={(e) => e.stopPropagation()}>
+        <button className="about-close" onClick={onClose}>×</button>
+        
+        <h2 className="about-title">How is the Internet Feeling?</h2>
+        
+        <div className="about-section">
+          <h3>what this is</h3>
+          <p>
+            A real-time sentiment analysis system that monitors the collective emotional state 
+            of the internet by analyzing posts from multiple social media platforms and search trends.
+          </p>
+        </div>
+
+        <div className="about-section">
+          <h3>how it works</h3>
+          <p>
+            The system continuously collects posts from Reddit, Mastodon, and Google Trends data. 
+            Each piece of content is processed through advanced sentiment analysis algorithms 
+            including VADER, TextBlob, and contextual analysis to determine emotional tone.
+          </p>
+          <p>
+            The happiness index is calculated as a weighted average of all analyzed content, 
+            updated in real-time every 10 seconds.
+          </p>
+        </div>
+
+        <div className="about-section">
+          <h3>data sources</h3>
+          <div className="source-list">
+            <div className="source-item">
+              <span className="source-icon" style={{ color: '#00ff88' }}>R</span>
+              <div>
+                <strong>Reddit</strong>
+                <span>Social discussions and community posts</span>
+              </div>
+            </div>
+            <div className="source-item">
+              <span className="source-icon" style={{ color: '#ff4466' }}>M</span>
+              <div>
+                <strong>Mastodon</strong>
+                <span>Decentralized social media posts</span>
+              </div>
+            </div>
+            <div className="source-item">
+              <span className="source-icon" style={{ color: '#ffaa00' }}>T</span>
+              <div>
+                <strong>Google Trends</strong>
+                <span>Search behavior patterns and interests</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="about-section">
+          <h3>sentiment analysis</h3>
+          <p>
+            Multiple algorithms work together to analyze emotional content:
+          </p>
+          <ul>
+            <li><strong>VADER</strong> - Lexicon and rule-based sentiment analysis</li>
+            <li><strong>TextBlob</strong> - Pattern-based sentiment classification</li>
+            <li><strong>Context Analysis</strong> - Detects emotional keywords, intensifiers, and negations</li>
+            <li><strong>Emoji Analysis</strong> - Interprets emotional meaning of emojis and symbols</li>
+          </ul>
+        </div>
+
+        <div className="about-section">
+          <h3>visualization</h3>
+          <p>
+            The 3D glass emoji face reflects the current emotional state, rotating and changing 
+            expression based on sentiment. The Joy Division-inspired wave visualization shows 
+            sentiment patterns over time, with colors indicating emotional intensity.
+          </p>
+        </div>
+
+        <div className="about-section">
+          <h3>privacy & ethics</h3>
+          <p>
+            Only public posts and aggregated search data are analyzed. No personal information 
+            is collected or stored. The system provides insights into collective mood patterns 
+            while respecting individual privacy.
+          </p>
+        </div>
       </div>
     </div>
   );
