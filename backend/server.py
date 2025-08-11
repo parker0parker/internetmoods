@@ -385,8 +385,9 @@ async def startup_event():
     """Start streaming on startup"""
     # Start background tasks
     asyncio.create_task(periodic_broadcast())
-    await asyncio.sleep(2)  # Give server time to start
+    await asyncio.sleep(3)  # Give server time to start
     await data_streamer.stream_all_sources()
+    print("Real-time happiness index data streaming started!")
 
 async def periodic_broadcast():
     """Periodically broadcast happiness updates"""
