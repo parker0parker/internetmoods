@@ -433,32 +433,19 @@ body {
   text-transform: lowercase;
 }
 
-/* Joy Division Chart */
+/* Happiness Timeline Chart */
 .chart-section {
   margin-bottom: 4rem;
 }
 
-.joy-chart {
+.happiness-chart {
   background-color: #000000;
   border: 1px solid #e3e3e3;
   position: relative;
   height: 300px;
 }
 
-.chart-title {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  font-size: 0.75rem;
-  font-weight: 400;
-  color: #e3e3e3;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  z-index: 10;
-  opacity: 0.8;
-}
-
-.joy-canvas {
+.happiness-canvas {
   width: 100%;
   height: 100%;
   display: block;
