@@ -219,7 +219,7 @@ class HappinessIndexTester:
         try:
             ws_url = f"{BACKEND_URL.replace('https://', 'wss://').replace('http://', 'ws://')}/api/ws"
             
-            async with websockets.connect(ws_url, timeout=10) as websocket:
+            async with websockets.connect(ws_url) as websocket:
                 # Wait for initial status message
                 try:
                     message = await asyncio.wait_for(websocket.recv(), timeout=5)
