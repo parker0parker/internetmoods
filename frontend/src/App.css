@@ -361,9 +361,11 @@ body {
   cursor: default;
 }
 
-.legend-color.happy { color: #00ff88; }
-.legend-color.neutral { color: #ffaa00; }
-.legend-color.sad { color: #ff4466; }
+.legend-colors {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
 
 .sentiment-readout {
   text-align: left;
