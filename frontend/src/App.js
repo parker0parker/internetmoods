@@ -1,52 +1,274 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import axios from "axios";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+const WS_URL = BACKEND_URL.replace('https://', 'wss://').replace('http://', 'ws://');
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
+const HappinessGauge = ({ happiness }) => {
+  const getColor = (score) => {
+    if (score >= 75) return "text-green-400";
+    if (score >= 60) return "text-yellow-400";
+    if (score >= 45) return "text-orange-400";
+    return "text-red-400";
+  };
+
+  const getMood = (score) => {
+    if (score >= 80) return "😊 Very Happy";
+    if (score >= 65) return "🙂 Happy";
+    if (score >= 55) return "😐 Neutral";
+    if (score >= 40) return "😕 Sad";
+    return "😞 Very Sad";
+  };
+
+  return (
+    <div className="happiness-gauge">
+      <div className="gauge-container">
+        <div className="gauge-background">
+          <div 
+            className="gauge-fill"
+            style={{ width: `${happiness}%` }}
+          ></div>
+        </div>
+        <div className={`happiness-score ${getColor(happiness)}`}>
+          {happiness.toFixed(1)}%
+        </div>
+      </div>
+      <div className="mood-indicator">
+        {getMood(happiness)}
+      </div>
+    </div>
+  );
+};
+
+const PostCard = ({ post }) => {
+  const getSentimentColor = (label) => {
+    switch(label) {
+      case 'positive': return 'border-green-400 bg-green-50';
+      case 'negative': return 'border-red-400 bg-red-50';
+      default: return 'border-gray-400 bg-gray-50';
     }
   };
 
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
+  const getSentimentEmoji = (label) => {
+    switch(label) {
+      case 'positive': return '😊';
+      case 'negative': return '😢';
+      default: return '😐';
+    }
+  };
 
   return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
+    <div className={`post-card ${getSentimentColor(post.sentiment_label)}`}>
+      <div className="post-header">
+        <span className="post-source">r/{post.subreddit}</span>
+        <span className="sentiment-badge">
+          {getSentimentEmoji(post.sentiment_label)} {post.sentiment_score.toFixed(1)}%
+        </span>
+      </div>
+      <p className="post-text">{post.text}</p>
+      <div className="post-time">
+        {new Date(post.timestamp).toLocaleTimeString()}
+      </div>
+    </div>
+  );
+};
+
+const StatCard = ({ title, value, subtitle, icon }) => (
+  <div className="stat-card">
+    <div className="stat-icon">{icon}</div>
+    <div className="stat-content">
+      <h3 className="stat-title">{title}</h3>
+      <p className="stat-value">{value}</p>
+      <p className="stat-subtitle">{subtitle}</p>
+    </div>
+  </div>
+);
+
+const TrendChart = ({ scores }) => {
+  const max = Math.max(...scores, 50);
+  const min = Math.min(...scores, 50);
+  const range = max - min || 1;
+
+  return (
+    <div className="trend-chart">
+      <h3 className="trend-title">Happiness Trend</h3>
+      <div className="chart-container">
+        <svg viewBox="0 0 300 100" className="trend-svg">
+          <polyline
+            points={scores.map((score, index) => 
+              `${(index / (scores.length - 1)) * 280 + 10},${90 - ((score - min) / range) * 80}`
+            ).join(' ')}
+            className="trend-line"
+          />
+          {scores.map((score, index) => (
+            <circle
+              key={index}
+              cx={(index / (scores.length - 1)) * 280 + 10}
+              cy={90 - ((score - min) / range) * 80}
+              r="2"
+              className="trend-point"
+            />
+          ))}
+        </svg>
+      </div>
     </div>
   );
 };
 
 function App() {
+  const [happinessData, setHappinessData] = useState({
+    current_happiness: 50,
+    total_posts_analyzed: 0,
+    source_breakdown: { reddit: 0, mastodon: 0 },
+    happiness_trend: []
+  });
+  const [recentPosts, setRecentPosts] = useState([]);
+  const [isConnected, setIsConnected] = useState(false);
+  const [ws, setWs] = useState(null);
+
+  useEffect(() => {
+    // Fetch initial data
+    const fetchInitialData = async () => {
+      try {
+        const response = await axios.get(`${API}/happiness`);
+        setHappinessData(response.data);
+      } catch (error) {
+        console.error('Error fetching initial data:', error);
+      }
+    };
+
+    fetchInitialData();
+
+    // Setup WebSocket connection
+    const websocket = new WebSocket(`${WS_URL}/api/ws`);
+    
+    websocket.onopen = () => {
+      console.log('WebSocket connected');
+      setIsConnected(true);
+      setWs(websocket);
+    };
+
+    websocket.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      
+      if (message.type === 'new_post') {
+        // Update happiness data
+        setHappinessData({
+          current_happiness: message.data.current_happiness,
+          total_posts_analyzed: message.data.total_analyzed,
+          source_breakdown: message.data.source_breakdown,
+          happiness_trend: happinessData.happiness_trend.slice(-9).concat([message.data.current_happiness])
+        });
+        
+        // Add new post to recent posts
+        setRecentPosts(prev => [message.data, ...prev.slice(0, 19)]);
+      } else if (message.type === 'initial_status') {
+        setHappinessData(prev => ({
+          ...prev,
+          current_happiness: message.data.current_happiness,
+          total_posts_analyzed: message.data.total_analyzed,
+          source_breakdown: message.data.source_breakdown
+        }));
+      }
+    };
+
+    websocket.onclose = () => {
+      console.log('WebSocket disconnected');
+      setIsConnected(false);
+    };
+
+    websocket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      setIsConnected(false);
+    };
+
+    return () => {
+      websocket.close();
+    };
+  }, []);
+
+  const startStreaming = async () => {
+    try {
+      await axios.post(`${API}/start-streaming`);
+    } catch (error) {
+      console.error('Error starting streaming:', error);
+    }
+  };
+
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+    <div className="app">
+      <div className="header">
+        <h1 className="main-title">🌐 Internet Happiness Index</h1>
+        <p className="subtitle">Real-time sentiment analysis of social media and news</p>
+        <div className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
+          {isConnected ? '🟢 Live' : '🔴 Disconnected'}
+        </div>
+      </div>
+
+      <div className="dashboard">
+        <div className="main-gauge-section">
+          <HappinessGauge happiness={happinessData.current_happiness} />
+        </div>
+
+        <div className="stats-grid">
+          <StatCard 
+            title="Posts Analyzed"
+            value={happinessData.total_posts_analyzed.toLocaleString()}
+            subtitle="Total processed"
+            icon="📊"
+          />
+          <StatCard 
+            title="Reddit Posts"
+            value={happinessData.source_breakdown.reddit.toLocaleString()}
+            subtitle="From subreddits"
+            icon="🤖"
+          />
+          <StatCard 
+            title="Data Sources"
+            value="7"
+            subtitle="Active subreddits"
+            icon="🔗"
+          />
+          <StatCard 
+            title="Update Rate"
+            value="~30s"
+            subtitle="Refresh interval"
+            icon="⚡"
+          />
+        </div>
+
+        {happinessData.happiness_trend.length > 0 && (
+          <div className="trend-section">
+            <TrendChart scores={happinessData.happiness_trend} />
+          </div>
+        )}
+
+        <div className="posts-section">
+          <div className="section-header">
+            <h2>Recent Posts</h2>
+            <button onClick={startStreaming} className="refresh-btn">
+              🔄 Refresh Stream
+            </button>
+          </div>
+          
+          <div className="posts-grid">
+            {recentPosts.map((post, index) => (
+              <PostCard key={`${post.id}-${index}`} post={post} />
+            ))}
+          </div>
+          
+          {recentPosts.length === 0 && (
+            <div className="empty-state">
+              <p>🔍 Waiting for new posts...</p>
+              <button onClick={startStreaming} className="start-btn">
+                Start Analyzing Posts
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

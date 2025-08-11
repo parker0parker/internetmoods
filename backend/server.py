@@ -1,15 +1,22 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, WebSocket, WebSocketDisconnect
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import asyncio
 from pathlib import Path
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Dict, Any
 import uuid
-from datetime import datetime
-
+from datetime import datetime, timedelta
+import json
+import praw
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import statistics
+from collections import deque
+import threading
+import time
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -19,14 +26,58 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Create the main app without a prefix
+# Create the main app
 app = FastAPI()
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# Initialize sentiment analyzer
+analyzer = SentimentIntensityAnalyzer()
+
+# Connection manager for WebSockets
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+
+    async def broadcast(self, message: dict):
+        disconnected_connections = []
+        for connection in self.active_connections:
+            try:
+                await connection.send_json(message)
+            except:
+                disconnected_connections.append(connection)
+        
+        # Remove disconnected connections
+        for connection in disconnected_connections:
+            self.disconnect(connection)
+
+manager = ConnectionManager()
+
+# Global variables for happiness tracking
+happiness_scores = deque(maxlen=100)  # Store last 100 scores
+current_happiness = 0.0
+total_posts_analyzed = 0
+source_breakdown = {"reddit": 0, "mastodon": 0}
 
 # Define Models
+class HappinessData(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    source: str
+    text: str
+    sentiment_score: float
+    sentiment_label: str
+    subreddit: str = None
+
 class StatusCheck(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     client_name: str
@@ -35,16 +86,181 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
-# Add your routes to the router instead of directly to app
+def analyze_sentiment(text: str) -> Dict[str, Any]:
+    """Analyze sentiment using VADER"""
+    scores = analyzer.polarity_scores(text)
+    
+    # Convert compound score to happiness scale (0-100)
+    happiness_score = ((scores['compound'] + 1) / 2) * 100
+    
+    # Determine label
+    if scores['compound'] >= 0.05:
+        label = "positive"
+    elif scores['compound'] <= -0.05:
+        label = "negative"
+    else:
+        label = "neutral"
+    
+    return {
+        "compound": scores['compound'],
+        "happiness_score": happiness_score,
+        "label": label,
+        "breakdown": {
+            "positive": scores['pos'],
+            "neutral": scores['neu'],
+            "negative": scores['neg']
+        }
+    }
+
+def update_happiness_index(sentiment_score: float, source: str):
+    """Update the global happiness index"""
+    global current_happiness, total_posts_analyzed
+    
+    happiness_scores.append(sentiment_score)
+    source_breakdown[source] += 1
+    total_posts_analyzed += 1
+    
+    # Calculate rolling average
+    if happiness_scores:
+        current_happiness = statistics.mean(happiness_scores)
+
+class RedditStreamer:
+    def __init__(self):
+        # Initialize Reddit without credentials (read-only access)
+        self.reddit = praw.Reddit(
+            client_id="dummy",
+            client_secret="dummy", 
+            user_agent="HappinessIndex/1.0"
+        )
+        self.reddit.read_only = True
+        
+    async def stream_subreddits(self, subreddits: List[str]):
+        """Stream from multiple subreddits"""
+        def reddit_stream():
+            try:
+                # Use a simple approach to get recent posts from subreddits
+                for subreddit_name in subreddits:
+                    try:
+                        subreddit = self.reddit.subreddit(subreddit_name)
+                        # Get recent posts
+                        for post in subreddit.new(limit=5):
+                            if post.selftext and len(post.selftext) > 10:
+                                sentiment = analyze_sentiment(post.selftext)
+                                
+                                # Create happiness data
+                                happiness_data = HappinessData(
+                                    source="reddit",
+                                    text=post.selftext[:200] + "..." if len(post.selftext) > 200 else post.selftext,
+                                    sentiment_score=sentiment["happiness_score"],
+                                    sentiment_label=sentiment["label"],
+                                    subreddit=subreddit_name
+                                )
+                                
+                                # Update global happiness index
+                                update_happiness_index(sentiment["happiness_score"], "reddit")
+                                
+                                # Create broadcast message
+                                message = {
+                                    "type": "new_post",
+                                    "data": {
+                                        "id": happiness_data.id,
+                                        "source": happiness_data.source,
+                                        "text": happiness_data.text,
+                                        "sentiment_score": happiness_data.sentiment_score,
+                                        "sentiment_label": happiness_data.sentiment_label,
+                                        "subreddit": happiness_data.subreddit,
+                                        "timestamp": happiness_data.timestamp.isoformat(),
+                                        "current_happiness": current_happiness,
+                                        "total_analyzed": total_posts_analyzed,
+                                        "source_breakdown": source_breakdown.copy()
+                                    }
+                                }
+                                
+                                # Broadcast to all connected clients
+                                asyncio.run_coroutine_threadsafe(
+                                    manager.broadcast(message), 
+                                    asyncio.get_event_loop()
+                                )
+                                
+                                # Store in database
+                                asyncio.run_coroutine_threadsafe(
+                                    db.happiness_data.insert_one(happiness_data.dict()),
+                                    asyncio.get_event_loop()
+                                )
+                                
+                                time.sleep(2)  # Rate limiting
+                                
+                    except Exception as e:
+                        print(f"Error with subreddit {subreddit_name}: {e}")
+                        
+                    time.sleep(5)  # Delay between subreddits
+                    
+            except Exception as e:
+                print(f"Reddit streaming error: {e}")
+        
+        # Run in thread to avoid blocking
+        thread = threading.Thread(target=reddit_stream, daemon=True)
+        thread.start()
+
+# Initialize Reddit streamer
+reddit_streamer = RedditStreamer()
+
+# API Routes
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Real-time Internet Happiness Index API"}
+
+@api_router.get("/happiness")
+async def get_happiness_status():
+    """Get current happiness index and statistics"""
+    return {
+        "current_happiness": round(current_happiness, 2),
+        "total_posts_analyzed": total_posts_analyzed,
+        "source_breakdown": source_breakdown,
+        "happiness_trend": list(happiness_scores)[-10:],  # Last 10 scores
+        "last_updated": datetime.utcnow().isoformat()
+    }
+
+@api_router.get("/recent-posts")
+async def get_recent_posts(limit: int = 20):
+    """Get recent analyzed posts"""
+    posts = await db.happiness_data.find().sort("timestamp", -1).limit(limit).to_list(limit)
+    return [HappinessData(**post) for post in posts]
+
+@api_router.post("/start-streaming")
+async def start_streaming():
+    """Start the Reddit streaming"""
+    subreddits = ["wholesomememes", "UpliftingNews", "happy", "MadeMeSmile", "todayilearned", "AskReddit", "funny"]
+    await reddit_streamer.stream_subreddits(subreddits)
+    return {"message": "Streaming started", "subreddits": subreddits}
+
+# WebSocket endpoint
+@app.websocket("/api/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        # Send initial happiness status
+        await websocket.send_json({
+            "type": "initial_status",
+            "data": {
+                "current_happiness": current_happiness,
+                "total_analyzed": total_posts_analyzed,
+                "source_breakdown": source_breakdown.copy()
+            }
+        })
+        
+        while True:
+            # Keep connection alive
+            data = await websocket.receive_text()
+            
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
 
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
     status_dict = input.dict()
     status_obj = StatusCheck(**status_dict)
-    _ = await db.status_checks.insert_one(status_obj.dict())
+    await db.status_checks.insert_one(status_obj.dict())
     return status_obj
 
 @api_router.get("/status", response_model=List[StatusCheck])
@@ -69,6 +285,13 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+@app.on_event("startup")
+async def startup_event():
+    """Start streaming on startup"""
+    await asyncio.sleep(2)  # Give server time to start
+    subreddits = ["wholesomememes", "UpliftingNews", "happy", "MadeMeSmile", "todayilearned", "AskReddit", "funny"]
+    await reddit_streamer.stream_subreddits(subreddits)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
