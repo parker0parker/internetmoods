@@ -311,13 +311,48 @@ body {
   min-height: 400px;
 }
 
-.emoji-container {
+.globe-container {
   height: 400px;
   width: 100%;
   background: radial-gradient(circle, #111111 0%, #000000 100%);
   border: 1px solid #e3e3e3;
   position: relative;
 }
+
+.globe-legend {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #333333;
+}
+
+.legend-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #666666;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.legend-colors {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.legend-color {
+  font-size: 0.65rem;
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 400;
+}
+
+.legend-color.happy { color: #00ff88; }
+.legend-color.neutral { color: #ffaa00; }
+.legend-color.sad { color: #ff4466; }
 
 .sentiment-readout {
   text-align: left;
