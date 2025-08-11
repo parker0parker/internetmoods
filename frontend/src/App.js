@@ -362,6 +362,18 @@ const HappinessTimelineChart = ({ scores, title }) => {
       }
     }
     
+    // Draw labels
+    ctx.fillStyle = '#666666';
+    ctx.font = '10px "Noto Sans Mono"';
+    ctx.textAlign = 'right';
+    
+    // Y-axis labels (happiness percentages)
+    for (let i = 0; i <= 10; i++) {
+      const y = padding + (i / 10) * chartHeight;
+      const value = Math.round(100 - (i * 10)); // Inverted because higher happiness is at top
+      ctx.fillText(`${value}%`, padding - 10, y + 3);
+    }
+    
   }, [scores]);
 
   // Helper function for sentiment colors
