@@ -506,11 +506,25 @@ function App() {
   }, []);
 
   const getSentimentText = (happiness) => {
-    if (happiness >= 70) return 'euphoric';
-    if (happiness >= 60) return 'joyful';
-    if (happiness >= 50) return 'content';
+    if (happiness >= 95) return 'ecstatic';
+    if (happiness >= 90) return 'euphoric';
+    if (happiness >= 85) return 'elated';
+    if (happiness >= 80) return 'jubilant';
+    if (happiness >= 75) return 'joyful';
+    if (happiness >= 70) return 'cheerful';
+    if (happiness >= 65) return 'upbeat';
+    if (happiness >= 60) return 'optimistic';
+    if (happiness >= 55) return 'content';
+    if (happiness >= 50) return 'neutral';
+    if (happiness >= 45) return 'subdued';
     if (happiness >= 40) return 'melancholic';
+    if (happiness >= 35) return 'gloomy';
     if (happiness >= 30) return 'somber';
+    if (happiness >= 25) return 'dejected';
+    if (happiness >= 20) return 'despairing';
+    if (happiness >= 15) return 'anguished';
+    if (happiness >= 10) return 'tormented';
+    if (happiness >= 5) return 'devastated';
     return 'despondent';
   };
 
