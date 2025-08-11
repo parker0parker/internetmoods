@@ -460,6 +460,18 @@ function App() {
   const [recentPosts, setRecentPosts] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const [hoveredCountry, setHoveredCountry] = useState(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  // Add mouse tracking for tooltips
+  useEffect(() => {
+    const handleMouseMove = (event) => {
+      setMousePosition({ x: event.clientX, y: event.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   useEffect(() => {
     // Fetch initial data
@@ -530,8 +542,10 @@ function App() {
   };
 
   const getSentimentColor = (happiness) => {
-    if (happiness >= 60) return '#00ff88';
-    if (happiness >= 40) return '#ffaa00';
+    if (happiness >= 70) return '#00ff88';
+    if (happiness >= 60) return '#44ff66';
+    if (happiness >= 50) return '#ffaa00';
+    if (happiness >= 40) return '#ff6644';
     return '#ff4466';
   };
 
@@ -554,14 +568,21 @@ function App() {
       </div>
 
       <div className="main-display">
-        <div className="globe-container">
-          <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
+        <div 
+          className="globe-container"
+          onMouseEnter={() => setHoveredCountry(null)}
+        >
+          <Canvas 
+            camera={{ position: [0, 0, 6], fov: 50 }}
+            onPointerMissed={() => setHoveredCountry(null)}
+          >
             <ambientLight intensity={0.4} />
             <pointLight position={[10, 10, 10]} intensity={0.8} />
             <pointLight position={[-10, -10, 10]} intensity={0.6} />
             <WireframeGlobe 
               happiness={happinessData.current_happiness} 
               countrySentiment={happinessData.country_sentiment || {}}
+              onCountryHover={setHoveredCountry}
             />
           </Canvas>
         </div>
@@ -579,9 +600,9 @@ function App() {
           <div className="globe-legend">
             <div className="legend-title">global sentiment</div>
             <div className="legend-colors">
-              <span className="legend-color happy">■ positive</span>
-              <span className="legend-color neutral">■ neutral</span>
-              <span className="legend-color sad">■ negative</span>
+              <span className="legend-color happy">■ euphoric/joyful</span>
+              <span className="legend-color neutral">■ content/neutral</span>
+              <span className="legend-color sad">■ melancholic/somber</span>
             </div>
           </div>
         </div>
@@ -629,6 +650,13 @@ function App() {
           </div>
         )}
       </div>
+
+      <GlobeTooltip
+        country={hoveredCountry?.name}
+        sentiment={hoveredCountry?.sentiment}
+        position={mousePosition}
+        visible={!!hoveredCountry}
+      />
 
       <AboutSection 
         isVisible={showAbout} 
