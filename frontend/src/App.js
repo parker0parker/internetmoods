@@ -337,41 +337,29 @@ const HappinessTimelineChart = ({ scores, title }) => {
         ctx.arc(x, y, 2, 0, Math.PI * 2);
         ctx.fill();
       });
-    }
-    
-    // Draw labels
-    ctx.fillStyle = '#666666';
-    ctx.font = '10px "Noto Sans Mono"';
-    ctx.textAlign = 'right';
-    
-    // Y-axis labels (happiness percentages)
-    for (let i = 0; i <= 10; i++) {
-      const y = padding + (i / 10) * chartHeight;
-      const value = Math.round(100 - (i * 10)); // Inverted because higher happiness is at top
-      ctx.fillText(`${value}%`, padding - 10, y + 3);
-    }
-    
-    // Current happiness indicator
-    if (scores.length > 0) {
-      const currentScore = scores[scores.length - 1];
-      const normalizedScore = scores.length > 1 ? (currentScore - minScore) / scoreRange : 0.5;
-      const currentY = padding + chartHeight - (normalizedScore * chartHeight);
       
-      // Draw current level line
-      ctx.strokeStyle = getSentimentColor(currentScore);
-      ctx.lineWidth = 1;
-      ctx.setLineDash([5, 5]);
-      ctx.beginPath();
-      ctx.moveTo(padding, currentY);
-      ctx.lineTo(padding + chartWidth, currentY);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      
-      // Current value label
-      ctx.fillStyle = getSentimentColor(currentScore);
-      ctx.textAlign = 'left';
-      ctx.font = '12px "Noto Sans Mono"';
-      ctx.fillText(`${currentScore.toFixed(1)}%`, padding + chartWidth + 10, currentY + 4);
+      // Current happiness indicator
+      if (scores.length > 0) {
+        const currentScore = scores[scores.length - 1];
+        const normalizedScore = (currentScore - minScore) / scoreRange;
+        const currentY = padding + chartHeight - (normalizedScore * chartHeight);
+        
+        // Draw current level line
+        ctx.strokeStyle = getSentimentColor(currentScore);
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(padding, currentY);
+        ctx.lineTo(padding + chartWidth, currentY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        // Current value label
+        ctx.fillStyle = getSentimentColor(currentScore);
+        ctx.textAlign = 'left';
+        ctx.font = '12px "Noto Sans Mono"';
+        ctx.fillText(`${currentScore.toFixed(1)}%`, padding + chartWidth + 10, currentY + 4);
+      }
     }
     
   }, [scores]);
