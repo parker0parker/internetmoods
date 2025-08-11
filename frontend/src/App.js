@@ -9,85 +9,115 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 const WS_URL = BACKEND_URL.replace('https://', 'wss://').replace('http://', 'ws://');
 
-// 3D Glass Emoji Face Component
-const GlassEmojiFace = ({ happiness }) => {
+// 3D Wireframe Globe with Country Sentiment
+const WireframeGlobe = ({ happiness, countrySentiment }) => {
   const meshRef = useRef();
   const groupRef = useRef();
+  const linesRef = useRef();
 
   useFrame((state) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y = state.clock.elapsedTime * 0.3;
-      groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.2) * 0.1;
+      groupRef.current.rotation.y = state.clock.elapsedTime * 0.1;
+      groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.05) * 0.1;
     }
   });
 
-  // Determine emoji shape and color based on happiness level
-  const getEmojiProps = () => {
-    if (happiness >= 70) return { type: 'happy', color: '#00ff88' }; // Green for happy
-    if (happiness >= 45) return { type: 'neutral', color: '#ffaa00' }; // Orange for neutral  
-    return { type: 'sad', color: '#ff4466' }; // Red for sad
+  const getSentimentColor = (sentiment) => {
+    if (sentiment >= 60) return '#00ff88'; // Happy - green
+    if (sentiment >= 40) return '#ffaa00'; // Neutral - orange  
+    return '#ff4466'; // Sad - red
   };
 
-  const { type: emojiType, color: accentColor } = getEmojiProps();
+  // Create wireframe sphere geometry
+  const createWireframeSphere = () => {
+    const geometry = new THREE.SphereGeometry(2, 24, 16);
+    const edges = new THREE.EdgesGeometry(geometry);
+    return edges;
+  };
+
+  // Create country regions (simplified as geometric shapes)
+  const CountryRegion = ({ position, sentiment, name }) => {
+    return (
+      <mesh position={position}>
+        <sphereGeometry args={[0.05, 8, 8]} />
+        <meshBasicMaterial 
+          color={getSentimentColor(sentiment)} 
+          transparent={true}
+          opacity={0.8}
+        />
+      </mesh>
+    );
+  };
+
+  // Major country positions (simplified latitude/longitude to 3D coordinates)
+  const countryPositions = {
+    'United States': [1.2, 0.8, 0.6],
+    'United Kingdom': [0.1, 1.2, 0.8],
+    'Germany': [0.3, 1.1, 0.9],
+    'France': [0.0, 1.0, 1.0],
+    'Japan': [-1.4, 0.6, 0.8],
+    'Australia': [0.8, -1.2, 0.6],
+    'Brazil': [0.6, -0.4, 1.2],
+    'India': [-0.8, 0.4, 1.0],
+    'China': [-1.0, 0.8, 0.8],
+    'Canada': [1.0, 1.4, 0.4],
+    'Russia': [-0.2, 1.6, 0.2],
+    'South Africa': [0.2, -1.4, 0.8]
+  };
 
   return (
     <group ref={groupRef}>
-      <Float speed={1.5} rotationIntensity={0.05} floatIntensity={0.3}>
-        {/* Main face sphere */}
-        <mesh ref={meshRef} scale={[1.8, 1.8, 1.8]}>
-          <sphereGeometry args={[1, 64, 64]} />
-          <MeshTransmissionMaterial
-            transmission={0.95}
-            thickness={0.15}
-            roughness={0.05}
-            chromaticAberration={0.02}
-            anisotropy={0.3}
-            envMapIntensity={1}
-            color="#ffffff"
-            transparent={true}
-            opacity={0.8}
-          />
-        </mesh>
+      <Float speed={0.5} rotationIntensity={0.02} floatIntensity={0.1}>
+        {/* Main wireframe sphere */}
+        <lineSegments ref={linesRef}>
+          <primitive object={createWireframeSphere()} />
+          <lineBasicMaterial color="#e3e3e3" opacity={0.3} transparent={true} />
+        </lineSegments>
 
-        {/* Eyes with color accent */}
-        <mesh position={[-0.35, 0.25, 0.9]}>
-          <sphereGeometry args={[0.08, 16, 16]} />
-          <meshBasicMaterial color={accentColor} />
-        </mesh>
-        <mesh position={[0.35, 0.25, 0.9]}>
-          <sphereGeometry args={[0.08, 16, 16]} />
-          <meshBasicMaterial color={accentColor} />
-        </mesh>
+        {/* Additional grid lines for Joy Division effect */}
+        {Array.from({ length: 12 }, (_, i) => (
+          <mesh key={i} rotation={[0, 0, (i * Math.PI) / 6]}>
+            <torusGeometry args={[2, 0.002, 2, 50, Math.PI]} />
+            <meshBasicMaterial 
+              color="#e3e3e3" 
+              opacity={0.2} 
+              transparent={true} 
+            />
+          </mesh>
+        ))}
 
-        {/* Mouth based on sentiment with color */}
-        {emojiType === 'happy' && (
-          <mesh position={[0, -0.25, 0.9]} rotation={[0, 0, 0]}>
-            <torusGeometry args={[0.25, 0.04, 8, 16, Math.PI]} />
-            <meshBasicMaterial color={accentColor} />
+        {/* Latitude lines */}
+        {Array.from({ length: 6 }, (_, i) => (
+          <mesh key={`lat-${i}`} rotation={[Math.PI/2, 0, 0]} position={[0, -1 + (i * 0.4), 0]}>
+            <torusGeometry args={[2 * Math.cos((i * Math.PI) / 6), 0.002, 2, 50]} />
+            <meshBasicMaterial 
+              color="#e3e3e3" 
+              opacity={0.2} 
+              transparent={true} 
+            />
           </mesh>
-        )}
-        
-        {emojiType === 'neutral' && (
-          <mesh position={[0, -0.25, 0.9]}>
-            <boxGeometry args={[0.35, 0.04, 0.04]} />
-            <meshBasicMaterial color={accentColor} />
-          </mesh>
-        )}
-        
-        {emojiType === 'sad' && (
-          <mesh position={[0, -0.25, 0.9]} rotation={[0, 0, Math.PI]}>
-            <torusGeometry args={[0.25, 0.04, 8, 16, Math.PI]} />
-            <meshBasicMaterial color={accentColor} />
-          </mesh>
-        )}
+        ))}
 
-        {/* Subtle inner glow effect */}
-        <mesh scale={[1.6, 1.6, 1.6]}>
-          <sphereGeometry args={[1, 32, 32]} />
+        {/* Country sentiment dots */}
+        {Object.entries(countryPositions).map(([country, position]) => {
+          const sentiment = countrySentiment[country] || happiness;
+          return (
+            <CountryRegion
+              key={country}
+              position={position}
+              sentiment={sentiment}
+              name={country}
+            />
+          );
+        })}
+
+        {/* Subtle glow effect */}
+        <mesh>
+          <sphereGeometry args={[2.1, 32, 32]} />
           <meshBasicMaterial 
-            color={accentColor} 
+            color={getSentimentColor(happiness)} 
             transparent={true} 
-            opacity={0.1}
+            opacity={0.05}
             side={THREE.BackSide}
           />
         </mesh>
