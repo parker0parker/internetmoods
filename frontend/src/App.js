@@ -124,7 +124,117 @@ const StatCard = ({ title, value, subtitle, icon }) => (
   </div>
 );
 
-const TrendChart = ({ scores }) => {
+const SourceBreakdown = ({ sourceData }) => {
+  const total = Object.values(sourceData).reduce((sum, count) => sum + count, 0);
+  
+  if (total === 0) return null;
+
+  return (
+    <div className="source-breakdown">
+      <h3 className="breakdown-title">Data Sources</h3>
+      <div className="breakdown-items">
+        {Object.entries(sourceData).map(([source, count]) => (
+          <div key={source} className="breakdown-item">
+            <div className="source-info">
+              <span className="source-icon">
+                {source === 'reddit' ? '🤖' : source === 'mastodon' ? '🐘' : '📊'}
+              </span>
+              <span className="source-name">
+                {source.charAt(0).toUpperCase() + source.slice(1).replace('_', ' ')}
+              </span>
+            </div>
+            <div className="source-stats">
+              <span className="count">{count.toLocaleString()}</span>
+              <span className="percentage">
+                ({((count / total) * 100).toFixed(1)}%)
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const SentimentDistribution = ({ posts }) => {
+  const distribution = posts.reduce((acc, post) => {
+    acc[post.sentiment_label] = (acc[post.sentiment_label] || 0) + 1;
+    return acc;
+  }, {});
+
+  const total = posts.length;
+  if (total === 0) return null;
+
+  return (
+    <div className="sentiment-distribution">
+      <h3 className="distribution-title">Sentiment Distribution</h3>
+      <div className="distribution-bars">
+        {['positive', 'neutral', 'negative'].map(sentiment => {
+          const count = distribution[sentiment] || 0;
+          const percentage = (count / total) * 100;
+          const color = sentiment === 'positive' ? '#22c55e' : 
+                       sentiment === 'negative' ? '#ef4444' : '#9ca3af';
+          
+          return (
+            <div key={sentiment} className="distribution-bar">
+              <div className="bar-label">
+                <span>{sentiment.charAt(0).toUpperCase() + sentiment.slice(1)}</span>
+                <span>{count} ({percentage.toFixed(1)}%)</span>
+              </div>
+              <div className="bar-container">
+                <div 
+                  className="bar-fill"
+                  style={{ width: `${percentage}%`, backgroundColor: color }}
+                ></div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const RealTimeStats = ({ data }) => {
+  const [timeElapsed, setTimeElapsed] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeElapsed(prev => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${secs}s`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${secs}s`;
+    } else {
+      return `${secs}s`;
+    }
+  };
+
+  return (
+    <div className="realtime-stats">
+      <div className="stats-row">
+        <div className="stat-item">
+          <span className="stat-label">Uptime</span>
+          <span className="stat-value">{formatTime(timeElapsed)}</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-label">Rate</span>
+          <span className="stat-value">~{(data.total_posts_analyzed / Math.max(timeElapsed / 60, 1)).toFixed(1)}/min</span>
+        </div>
+      </div>
+    </div>
+  );
+};
   const max = Math.max(...scores, 50);
   const min = Math.min(...scores, 50);
   const range = max - min || 1;
