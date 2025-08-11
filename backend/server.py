@@ -147,108 +147,155 @@ def update_happiness_index(sentiment_data: Dict[str, Any], source: str, post_dat
         "source_breakdown": source_breakdown.copy()
     })
 
-class RedditStreamer:
+class RealDataStreamer:
+    """Real-time data streaming from multiple sources"""
+    
     def __init__(self):
-        # Mock Reddit data - no praw dependency
-        self.mock_posts = [
-            "Today I learned something amazing that made me smile!",
-            "Just had the best day ever with my family.",
-            "Found a $20 bill on the ground and returned it to the owner.",
-            "My dog learned a new trick today and I'm so proud!",
-            "Helped an elderly person cross the street today.",
-            "Got a promotion at work after months of hard work!",
-            "Made a new friend at the coffee shop today.",
-            "Watched a beautiful sunset that took my breath away.",
-            "My garden is finally blooming after weeks of care.",
-            "Received an unexpected compliment that made my day."
-        ]
+        self.running = False
         
-    async def stream_subreddits(self, subreddits: List[str]):
-        """Stream mock data from subreddits"""
-        def reddit_stream():
+    async def stream_all_sources(self):
+        """Stream data from all available sources"""
+        def data_stream():
             try:
-                # Create new event loop for this thread
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
+                self.running = True
+                cycle_count = 0
                 
-                # Generate mock posts continuously
-                while True:
-                    for subreddit_name in subreddits:
-                        try:
-                            # Generate random mock post
-                            mock_text = random.choice(self.mock_posts)
-                            sentiment = analyze_sentiment(mock_text)
-                            
-                            # Create happiness data
-                            happiness_data = HappinessData(
-                                source="reddit",
-                                text=mock_text,
-                                sentiment_score=sentiment["happiness_score"],
-                                sentiment_label=sentiment["label"],
-                                subreddit=subreddit_name
-                            )
-                            
-                            # Create post data
-                            post_data = {
-                                "id": happiness_data.id,
-                                "source": happiness_data.source,
-                                "text": happiness_data.text,
-                                "sentiment_score": happiness_data.sentiment_score,
-                                "sentiment_label": happiness_data.sentiment_label,
-                                "subreddit": happiness_data.subreddit,
-                                "timestamp": happiness_data.timestamp.isoformat()
-                            }
-                            
-                            # Update global happiness index
-                            update_happiness_index(sentiment["happiness_score"], "reddit", post_data)
-                            
-                            # Create broadcast message
-                            message = {
-                                "type": "new_post",
-                                "data": {
-                                    "id": happiness_data.id,
-                                    "source": happiness_data.source,
-                                    "text": happiness_data.text,
-                                    "sentiment_score": happiness_data.sentiment_score,
-                                    "sentiment_label": happiness_data.sentiment_label,
-                                    "subreddit": happiness_data.subreddit,
-                                    "timestamp": happiness_data.timestamp.isoformat(),
-                                    "current_happiness": current_happiness,
-                                    "total_analyzed": total_posts_analyzed,
-                                    "source_breakdown": source_breakdown.copy()
-                                }
-                            }
-                            
-                            # Use synchronous approach for thread safety
-                            try:
-                                # Just update the global variables, websockets will be handled differently
-                                print(f"New post from r/{subreddit_name}: {sentiment['happiness_score']:.1f}% happiness")
-                            except Exception as e:
-                                print(f"Broadcast error: {e}")
-                            
-                            # Store in database - simplified approach
-                            try:
-                                # Skip database for now, focus on real-time updates
-                                pass
-                            except Exception as e:
-                                print(f"Database error: {e}")
-                            
-                            time.sleep(3)  # Rate limiting
-                            
-                        except Exception as e:
-                            print(f"Error with subreddit {subreddit_name}: {e}")
-                            
-                        time.sleep(2)  # Delay between subreddits
-                        
+                while self.running:
+                    cycle_count += 1
+                    print(f"Data collection cycle {cycle_count}")
+                    
+                    # Rotate through different data sources
+                    if cycle_count % 3 == 1:
+                        # Reddit data
+                        self._collect_reddit_data()
+                    elif cycle_count % 3 == 2:
+                        # Mastodon data 
+                        self._collect_mastodon_data()
+                    else:
+                        # Google Trends data
+                        self._collect_trends_data()
+                    
+                    # Wait between collections
+                    time.sleep(10)  # Collect every 10 seconds
+                    
             except Exception as e:
-                print(f"Reddit streaming error: {e}")
-        
-        # Run in thread to avoid blocking
-        thread = threading.Thread(target=reddit_stream, daemon=True)
+                print(f"Data streaming error: {e}")
+                
+        # Run in background thread
+        thread = threading.Thread(target=data_stream, daemon=True)
         thread.start()
+    
+    def _collect_reddit_data(self):
+        """Collect real Reddit data"""
+        try:
+            posts = reddit_collector.get_random_posts(count=3)
+            
+            for post in posts:
+                if not post.get('text'):
+                    continue
+                    
+                # Analyze sentiment
+                sentiment_data = analyze_sentiment(post['text'], 'reddit')
+                
+                # Create post data
+                post_data = {
+                    "id": str(uuid.uuid4()),
+                    "source": "reddit", 
+                    "text": post['text'][:300] + "..." if len(post['text']) > 300 else post['text'],
+                    "sentiment_score": sentiment_data["happiness_score"],
+                    "sentiment_label": sentiment_data["label"], 
+                    "confidence": sentiment_data["confidence"],
+                    "subreddit": post.get('subreddit', 'unknown'),
+                    "original_score": post.get('score', 0),
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "url": post.get('url', '')
+                }
+                
+                # Update global happiness index
+                update_happiness_index(sentiment_data, "reddit", post_data)
+                
+                print(f"Reddit r/{post.get('subreddit')}: {sentiment_data['happiness_score']:.1f}% ({sentiment_data['label']})")
+                
+                time.sleep(1)  # Rate limiting
+                
+        except Exception as e:
+            print(f"Reddit collection error: {e}")
+    
+    def _collect_mastodon_data(self):
+        """Collect real Mastodon data"""
+        try:
+            posts = mastodon_collector.get_random_posts(count=2)
+            
+            for post in posts:
+                if not post.get('text'):
+                    continue
+                    
+                # Analyze sentiment  
+                sentiment_data = analyze_sentiment(post['text'], 'mastodon')
+                
+                # Create post data
+                post_data = {
+                    "id": str(uuid.uuid4()),
+                    "source": "mastodon",
+                    "text": post['text'][:300] + "..." if len(post['text']) > 300 else post['text'],
+                    "sentiment_score": sentiment_data["happiness_score"], 
+                    "sentiment_label": sentiment_data["label"],
+                    "confidence": sentiment_data["confidence"],
+                    "instance": post.get('instance', 'unknown'),
+                    "favourites_count": post.get('favourites_count', 0),
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "url": post.get('url', '')
+                }
+                
+                # Update global happiness index
+                update_happiness_index(sentiment_data, "mastodon", post_data)
+                
+                print(f"Mastodon {post.get('instance')}: {sentiment_data['happiness_score']:.1f}% ({sentiment_data['label']})")
+                
+                time.sleep(2)  # Rate limiting for Mastodon
+                
+        except Exception as e:
+            print(f"Mastodon collection error: {e}")
+    
+    def _collect_trends_data(self):
+        """Collect Google Trends data"""
+        try:
+            trends = google_trends_collector.get_happiness_trends()
+            
+            for trend in trends:
+                if not trend.get('text'):
+                    continue
+                    
+                # Analyze sentiment
+                sentiment_data = analyze_sentiment(trend['text'], 'google_trends')
+                
+                # Create post data
+                post_data = {
+                    "id": str(uuid.uuid4()),
+                    "source": "google_trends",
+                    "text": trend['text'],
+                    "sentiment_score": sentiment_data["happiness_score"],
+                    "sentiment_label": sentiment_data["label"],
+                    "confidence": sentiment_data["confidence"],
+                    "keyword": trend.get('keyword', ''),
+                    "interest_level": trend.get('interest_level', 0),
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+                
+                # Update global happiness index
+                update_happiness_index(sentiment_data, "google_trends", post_data)
+                
+                print(f"Google Trends '{trend.get('keyword')}': {sentiment_data['happiness_score']:.1f}% ({sentiment_data['label']})")
+                
+        except Exception as e:
+            print(f"Google Trends collection error: {e}")
+    
+    def stop_streaming(self):
+        """Stop the data streaming"""
+        self.running = False
 
-# Initialize Reddit streamer
-reddit_streamer = RedditStreamer()
+# Initialize data streamer
+data_streamer = RealDataStreamer()
 
 # API Routes
 @api_router.get("/")
@@ -273,10 +320,9 @@ async def get_recent_posts(limit: int = 20):
 
 @api_router.post("/start-streaming")
 async def start_streaming():
-    """Start the Reddit streaming"""
-    subreddits = ["wholesomememes", "UpliftingNews", "happy", "MadeMeSmile", "todayilearned", "AskReddit", "funny"]
-    await reddit_streamer.stream_subreddits(subreddits)
-    return {"message": "Streaming started", "subreddits": subreddits}
+    """Start the data streaming"""
+    await data_streamer.stream_all_sources()
+    return {"message": "Data streaming started from all sources"}
 
 # WebSocket endpoint
 @app.websocket("/api/ws")
@@ -336,8 +382,7 @@ async def startup_event():
     # Start background tasks
     asyncio.create_task(periodic_broadcast())
     await asyncio.sleep(2)  # Give server time to start
-    subreddits = ["wholesomememes", "UpliftingNews", "happy", "MadeMeSmile", "todayilearned", "AskReddit", "funny"]
-    await reddit_streamer.stream_subreddits(subreddits)
+    await data_streamer.stream_all_sources()
 
 async def periodic_broadcast():
     """Periodically broadcast happiness updates"""
