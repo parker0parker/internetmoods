@@ -46,7 +46,7 @@ const PostCard = ({ post }) => {
   const getSentimentColor = (label) => {
     switch(label) {
       case 'positive': return 'border-green-400 bg-green-50';
-      case 'negative': return 'border-red-400 bg-red-50';
+      case 'negative': return 'border-red-400 bg-red-50';  
       default: return 'border-gray-400 bg-gray-50';
     }
   };
@@ -59,17 +59,55 @@ const PostCard = ({ post }) => {
     }
   };
 
+  const getSourceIcon = (source) => {
+    switch(source) {
+      case 'reddit': return '🤖';
+      case 'mastodon': return '🐘'; 
+      case 'google_trends': return '📊';
+      default: return '🌐';
+    }
+  };
+
+  const getSourceLabel = (post) => {
+    if (post.source === 'reddit' && post.subreddit) {
+      return `r/${post.subreddit}`;
+    } else if (post.source === 'mastodon' && post.instance) {
+      return `${post.instance}`;
+    } else if (post.source === 'google_trends' && post.keyword) {
+      return `Trends: ${post.keyword}`;
+    }
+    return post.source;
+  };
+
   return (
     <div className={`post-card ${getSentimentColor(post.sentiment_label)}`}>
       <div className="post-header">
-        <span className="post-source">r/{post.subreddit}</span>
-        <span className="sentiment-badge">
-          {getSentimentEmoji(post.sentiment_label)} {post.sentiment_score.toFixed(1)}%
+        <span className="post-source">
+          {getSourceIcon(post.source)} {getSourceLabel(post)}
         </span>
+        <div className="sentiment-info">
+          <span className="sentiment-badge">
+            {getSentimentEmoji(post.sentiment_label)} {post.sentiment_score.toFixed(1)}%
+          </span>
+          {post.confidence && (
+            <span className="confidence-badge">
+              {(post.confidence * 100).toFixed(0)}% confidence
+            </span>
+          )}
+        </div>
       </div>
       <p className="post-text">{post.text}</p>
-      <div className="post-time">
-        {new Date(post.timestamp).toLocaleTimeString()}
+      <div className="post-footer">
+        <div className="post-time">
+          {new Date(post.timestamp).toLocaleTimeString()}
+        </div>
+        {post.methods && (
+          <div className="analysis-methods">
+            <span title={`VADER: ${post.methods.vader}%, TextBlob: ${post.methods.textblob}%`}>
+              📊 Multi-method analysis
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
