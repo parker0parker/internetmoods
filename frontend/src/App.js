@@ -369,7 +369,8 @@ function App() {
     current_happiness: 50,
     total_posts_analyzed: 0,
     source_breakdown: { reddit: 0, mastodon: 0, google_trends: 0 },
-    happiness_trend: []
+    happiness_trend: [],
+    country_sentiment: {}
   });
   const [recentPosts, setRecentPosts] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
@@ -404,7 +405,8 @@ function App() {
           current_happiness: message.data.current_happiness,
           total_posts_analyzed: message.data.total_analyzed,
           source_breakdown: message.data.source_breakdown,
-          happiness_trend: [...prev.happiness_trend.slice(-30), message.data.current_happiness]
+          happiness_trend: [...prev.happiness_trend.slice(-30), message.data.current_happiness],
+          country_sentiment: message.data.country_sentiment || prev.country_sentiment
         }));
         
         if (message.data.recent_posts) {
@@ -453,12 +455,15 @@ function App() {
       </div>
 
       <div className="main-display">
-        <div className="emoji-container">
-          <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-            <ambientLight intensity={0.6} />
-            <pointLight position={[10, 10, 10]} intensity={1.2} />
-            <pointLight position={[-10, -10, 10]} intensity={0.8} />
-            <GlassEmojiFace happiness={happinessData.current_happiness} />
+        <div className="globe-container">
+          <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
+            <ambientLight intensity={0.4} />
+            <pointLight position={[10, 10, 10]} intensity={0.8} />
+            <pointLight position={[-10, -10, 10]} intensity={0.6} />
+            <WireframeGlobe 
+              happiness={happinessData.current_happiness} 
+              countrySentiment={happinessData.country_sentiment || {}}
+            />
           </Canvas>
         </div>
         
@@ -471,6 +476,14 @@ function App() {
           </div>
           <div className="sentiment-word">
             {getSentimentText(happinessData.current_happiness)}
+          </div>
+          <div className="globe-legend">
+            <div className="legend-title">global sentiment</div>
+            <div className="legend-colors">
+              <span className="legend-color happy">■ positive</span>
+              <span className="legend-color neutral">■ neutral</span>
+              <span className="legend-color sad">■ negative</span>
+            </div>
           </div>
         </div>
       </div>
@@ -513,7 +526,7 @@ function App() {
         
         {recentPosts.length === 0 && (
           <div className="empty-state">
-            <div>MONITORING FREQUENCIES...</div>
+            <div>MONITORING GLOBAL FREQUENCIES...</div>
           </div>
         )}
       </div>
