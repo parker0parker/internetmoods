@@ -74,7 +74,15 @@ manager = ConnectionManager()
 happiness_scores = deque(maxlen=1000)  # Store more scores for better analysis
 current_happiness = 50.0  # Start with neutral
 total_posts_analyzed = 0
-source_breakdown = {"reddit": 0, "mastodon": 0, "google_trends": 0}
+source_breakdown = {
+    "reddit": 0, 
+    "mastodon": 0, 
+    "google_trends": 0, 
+    "youtube": 0, 
+    "news": 0, 
+    "twitter": 0, 
+    "forums": 0
+}
 recent_posts = []  # Store recent posts for display
 geographic_data = {}  # Store geographic sentiment data
 historical_data = deque(maxlen=1440)  # Store 24 hours of minute-by-minute data
