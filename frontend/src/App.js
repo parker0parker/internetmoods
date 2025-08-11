@@ -235,6 +235,8 @@ const RealTimeStats = ({ data }) => {
     </div>
   );
 };
+
+const TrendChart = ({ scores }) => {
   const max = Math.max(...scores, 50);
   const min = Math.min(...scores, 50);
   const range = max - min || 1;
