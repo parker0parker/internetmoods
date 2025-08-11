@@ -172,8 +172,19 @@ class RedditStreamer:
                                 subreddit=subreddit_name
                             )
                             
+                            # Create post data
+                            post_data = {
+                                "id": happiness_data.id,
+                                "source": happiness_data.source,
+                                "text": happiness_data.text,
+                                "sentiment_score": happiness_data.sentiment_score,
+                                "sentiment_label": happiness_data.sentiment_label,
+                                "subreddit": happiness_data.subreddit,
+                                "timestamp": happiness_data.timestamp.isoformat()
+                            }
+                            
                             # Update global happiness index
-                            update_happiness_index(sentiment["happiness_score"], "reddit")
+                            update_happiness_index(sentiment["happiness_score"], "reddit", post_data)
                             
                             # Create broadcast message
                             message = {
