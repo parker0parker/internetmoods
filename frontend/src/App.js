@@ -271,7 +271,7 @@ function App() {
   const [happinessData, setHappinessData] = useState({
     current_happiness: 50,
     total_posts_analyzed: 0,
-    source_breakdown: { reddit: 0, mastodon: 0 },
+    source_breakdown: { reddit: 0, mastodon: 0, google_trends: 0 },
     happiness_trend: []
   });
   const [recentPosts, setRecentPosts] = useState([]);
@@ -366,7 +366,7 @@ function App() {
     <div className="app">
       <div className="header">
         <h1 className="main-title">🌐 Internet Happiness Index</h1>
-        <p className="subtitle">Real-time sentiment analysis of social media and news</p>
+        <p className="subtitle">Real-time sentiment analysis from multiple data sources</p>
         <div className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
           {isConnected ? '🟢 Live' : '🔴 Disconnected'}
         </div>
@@ -404,13 +404,6 @@ function App() {
           />
         </div>
 
-        <div className="analytics-section">
-          <SourceBreakdown sourceData={happinessData.source_breakdown} />
-          <SentimentDistribution posts={recentPosts} />
-        </div>
-
-        <RealTimeStats data={happinessData} />
-
         {happinessData.happiness_trend.length > 0 && (
           <div className="trend-section">
             <TrendChart scores={happinessData.happiness_trend} />
@@ -419,7 +412,7 @@ function App() {
 
         <div className="posts-section">
           <div className="section-header">
-            <h2>Recent Posts</h2>
+            <h2>Recent Posts & Analysis</h2>
             <button onClick={startStreaming} className="refresh-btn">
               🔄 Refresh Stream
             </button>
@@ -433,7 +426,8 @@ function App() {
           
           {recentPosts.length === 0 && (
             <div className="empty-state">
-              <p>🔍 Waiting for new posts...</p>
+              <p>🔍 Collecting real-time data...</p>
+              <p>Data from Reddit, Mastodon, and Google Trends</p>
               <button onClick={startStreaming} className="start-btn">
                 Start Analyzing Posts
               </button>
