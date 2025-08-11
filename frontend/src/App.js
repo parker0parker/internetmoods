@@ -16,68 +16,81 @@ const GlassEmojiFace = ({ happiness }) => {
 
   useFrame((state) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.3;
-      groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.3) * 0.1;
+      groupRef.current.rotation.y = state.clock.elapsedTime * 0.3;
+      groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.2) * 0.1;
     }
   });
 
-  // Determine emoji shape based on happiness level
-  const getEmojiGeometry = () => {
-    if (happiness >= 70) return 'happy';
-    if (happiness >= 45) return 'neutral';
-    return 'sad';
+  // Determine emoji shape and color based on happiness level
+  const getEmojiProps = () => {
+    if (happiness >= 70) return { type: 'happy', color: '#00ff88' }; // Green for happy
+    if (happiness >= 45) return { type: 'neutral', color: '#ffaa00' }; // Orange for neutral  
+    return { type: 'sad', color: '#ff4466' }; // Red for sad
   };
 
-  const emojiType = getEmojiGeometry();
+  const { type: emojiType, color: accentColor } = getEmojiProps();
 
   return (
     <group ref={groupRef}>
-      <Float speed={2} rotationIntensity={0.1} floatIntensity={0.5}>
+      <Float speed={1.5} rotationIntensity={0.05} floatIntensity={0.3}>
         {/* Main face sphere */}
-        <mesh ref={meshRef} scale={[2, 2, 2]}>
-          <sphereGeometry args={[1, 32, 32]} />
+        <mesh ref={meshRef} scale={[1.8, 1.8, 1.8]}>
+          <sphereGeometry args={[1, 64, 64]} />
           <MeshTransmissionMaterial
-            transmission={0.9}
-            thickness={0.2}
-            roughness={0.1}
-            chromaticAberration={0.1}
-            anisotropy={0.1}
-            envMapIntensity={0.5}
+            transmission={0.95}
+            thickness={0.15}
+            roughness={0.05}
+            chromaticAberration={0.02}
+            anisotropy={0.3}
+            envMapIntensity={1}
             color="#ffffff"
+            transparent={true}
+            opacity={0.8}
           />
         </mesh>
 
-        {/* Eyes */}
-        <mesh position={[-0.3, 0.2, 0.8]}>
-          <sphereGeometry args={[0.1, 16, 16]} />
-          <meshBasicMaterial color="#000000" />
+        {/* Eyes with color accent */}
+        <mesh position={[-0.35, 0.25, 0.9]}>
+          <sphereGeometry args={[0.08, 16, 16]} />
+          <meshBasicMaterial color={accentColor} />
         </mesh>
-        <mesh position={[0.3, 0.2, 0.8]}>
-          <sphereGeometry args={[0.1, 16, 16]} />
-          <meshBasicMaterial color="#000000" />
+        <mesh position={[0.35, 0.25, 0.9]}>
+          <sphereGeometry args={[0.08, 16, 16]} />
+          <meshBasicMaterial color={accentColor} />
         </mesh>
 
-        {/* Mouth based on sentiment */}
+        {/* Mouth based on sentiment with color */}
         {emojiType === 'happy' && (
-          <mesh position={[0, -0.3, 0.8]} rotation={[0, 0, 0]}>
-            <torusGeometry args={[0.3, 0.05, 8, 16, Math.PI]} />
-            <meshBasicMaterial color="#000000" />
+          <mesh position={[0, -0.25, 0.9]} rotation={[0, 0, 0]}>
+            <torusGeometry args={[0.25, 0.04, 8, 16, Math.PI]} />
+            <meshBasicMaterial color={accentColor} />
           </mesh>
         )}
         
         {emojiType === 'neutral' && (
-          <mesh position={[0, -0.3, 0.8]}>
-            <boxGeometry args={[0.4, 0.05, 0.05]} />
-            <meshBasicMaterial color="#000000" />
+          <mesh position={[0, -0.25, 0.9]}>
+            <boxGeometry args={[0.35, 0.04, 0.04]} />
+            <meshBasicMaterial color={accentColor} />
           </mesh>
         )}
         
         {emojiType === 'sad' && (
-          <mesh position={[0, -0.3, 0.8]} rotation={[0, 0, Math.PI]}>
-            <torusGeometry args={[0.3, 0.05, 8, 16, Math.PI]} />
-            <meshBasicMaterial color="#000000" />
+          <mesh position={[0, -0.25, 0.9]} rotation={[0, 0, Math.PI]}>
+            <torusGeometry args={[0.25, 0.04, 8, 16, Math.PI]} />
+            <meshBasicMaterial color={accentColor} />
           </mesh>
         )}
+
+        {/* Subtle inner glow effect */}
+        <mesh scale={[1.6, 1.6, 1.6]}>
+          <sphereGeometry args={[1, 32, 32]} />
+          <meshBasicMaterial 
+            color={accentColor} 
+            transparent={true} 
+            opacity={0.1}
+            side={THREE.BackSide}
+          />
+        </mesh>
       </Float>
     </group>
   );
