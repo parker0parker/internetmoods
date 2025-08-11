@@ -91,43 +91,92 @@ country_sentiment = {}  # Store country-specific sentiment data
 def generate_country_sentiment(base_happiness):
     """Generate country-specific sentiment data with significant variation"""
     countries = [
-        'United States', 'United Kingdom', 'Germany', 'France', 'Japan',
-        'Australia', 'Brazil', 'India', 'China', 'Canada', 'Russia',
-        'South Africa', 'Mexico', 'Italy', 'Spain', 'South Korea',
-        'Sweden', 'Netherlands', 'Argentina', 'Nigeria'
+        # North America
+        'United States', 'Canada', 'Mexico',
+        
+        # South America  
+        'Brazil', 'Argentina', 'Chile', 'Colombia', 'Peru', 'Venezuela', 'Uruguay', 'Ecuador',
+        
+        # Europe
+        'United Kingdom', 'Germany', 'France', 'Italy', 'Spain', 'Netherlands', 'Sweden',
+        'Norway', 'Finland', 'Denmark', 'Belgium', 'Switzerland', 'Austria', 'Poland',
+        'Czech Republic', 'Portugal', 'Greece', 'Russia', 'Ukraine', 'Turkey',
+        
+        # Asia
+        'China', 'Japan', 'India', 'South Korea', 'Thailand', 'Vietnam', 'Indonesia',
+        'Philippines', 'Malaysia', 'Singapore', 'Taiwan', 'Bangladesh', 'Pakistan',
+        'Iran', 'Saudi Arabia', 'Israel', 'UAE', 'Mongolia', 'Kazakhstan',
+        
+        # Africa  
+        'South Africa', 'Nigeria', 'Egypt', 'Kenya', 'Morocco', 'Ghana', 'Ethiopia',
+        'Tanzania', 'Algeria', 'Libya', 'Tunisia', 'Cameroon', 'Uganda', 'Zimbabwe',
+        
+        # Oceania
+        'Australia', 'New Zealand', 'Papua New Guinea', 'Fiji',
+        
+        # Middle East
+        'Iraq', 'Afghanistan', 'Syria', 'Jordan', 'Lebanon'
     ]
     
     country_data = {}
     
-    # Create more interesting patterns - some countries consistently happier/sadder
+    # Create regional and cultural patterns
     country_modifiers = {
-        'Sweden': 15,      # Generally happier
-        'Netherlands': 12,  # Generally happier
-        'Canada': 10,      # Generally happier
-        'Australia': 8,    # Generally happier
-        'Germany': 5,      # Slightly happier
-        'United Kingdom': 2, # Slightly happier
-        'France': 0,       # Average
-        'United States': -2, # Slightly sadder
-        'Japan': -5,       # Slightly sadder
-        'Italy': -3,       # Slightly sadder
-        'Spain': 3,        # Slightly happier
-        'South Korea': -8,  # Generally sadder
-        'Brazil': 8,       # Generally happier
-        'Mexico': 6,       # Generally happier
-        'Argentina': -4,   # Slightly sadder
-        'India': -6,       # Generally sadder
-        'China': -10,      # Generally sadder
-        'Russia': -12,     # Generally sadder
-        'South Africa': -8, # Generally sadder
-        'Nigeria': -5,     # Slightly sadder
+        # Nordic countries - generally happier
+        'Sweden': 18, 'Norway': 20, 'Finland': 16, 'Denmark': 22,
+        
+        # Western Europe - generally positive
+        'Netherlands': 15, 'Switzerland': 17, 'Germany': 8, 'Austria': 10,
+        'Belgium': 6, 'France': 4, 'United Kingdom': 5,
+        
+        # North America - mixed
+        'Canada': 12, 'United States': -1,
+        
+        # Oceania - positive
+        'Australia': 11, 'New Zealand': 14, 'Fiji': 8,
+        
+        # East Asia - mixed with work stress
+        'Japan': -8, 'South Korea': -10, 'Singapore': 2, 'Taiwan': 0,
+        
+        # China and neighbors
+        'China': -12, 'Mongolia': -6,
+        
+        # Southeast Asia - generally positive
+        'Thailand': 6, 'Malaysia': 4, 'Philippines': 2, 'Vietnam': -2, 'Indonesia': 0,
+        
+        # South Asia - challenges
+        'India': -8, 'Bangladesh': -12, 'Pakistan': -15,
+        
+        # Middle East - significant challenges
+        'UAE': 5, 'Saudi Arabia': -3, 'Israel': -2, 'Iran': -18,
+        'Iraq': -25, 'Afghanistan': -30, 'Syria': -28, 'Jordan': -8, 'Lebanon': -15,
+        
+        # Southern Europe - mixed
+        'Italy': -2, 'Spain': 1, 'Portugal': -1, 'Greece': -8,
+        
+        # Eastern Europe - mixed to challenging
+        'Poland': -3, 'Czech Republic': 2, 'Russia': -15, 'Ukraine': -22, 'Turkey': -10,
+        
+        # Africa - varied
+        'South Africa': -5, 'Morocco': -3, 'Egypt': -10, 'Tunisia': -6,
+        'Nigeria': -8, 'Ghana': 2, 'Kenya': -4, 'Ethiopia': -12,
+        'Tanzania': -6, 'Algeria': -8, 'Libya': -20, 'Zimbabwe': -18,
+        'Cameroon': -7, 'Uganda': -9,
+        
+        # South America - mixed
+        'Brazil': 3, 'Argentina': -6, 'Chile': 4, 'Colombia': -2,
+        'Peru': -4, 'Venezuela': -20, 'Uruguay': 8, 'Ecuador': -3,
+        
+        # Small nations
+        'Papua New Guinea': -8, 'Kazakhstan': -10,
+        'Mexico': 0
     }
     
     for country in countries:
         base_modifier = country_modifiers.get(country, 0)
-        # Add some random variation around the base + country modifier
-        random_variation = random.uniform(-8, 8)
-        country_happiness = max(5, min(95, base_happiness + base_modifier + random_variation))
+        # Add some random variation
+        random_variation = random.uniform(-5, 5)
+        country_happiness = max(10, min(90, base_happiness + base_modifier + random_variation))
         country_data[country] = round(country_happiness, 1)
     
     return country_data
