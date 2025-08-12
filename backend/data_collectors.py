@@ -484,12 +484,24 @@ class TwitterCollector:
             ]
             
             tweets = []
+            twitter_urls = [
+                'https://twitter.com/search?q=farmers%20market',
+                'https://twitter.com/search?q=concerned%20direction',
+                'https://twitter.com/search?q=book%20recommendation',
+                'https://twitter.com/search?q=traffic%20terrible',
+                'https://twitter.com/search?q=beautiful%20sunset',
+                'https://twitter.com/search?q=weekend%20plans',
+                'https://twitter.com/search?q=overwhelmed%20everything',
+                'https://twitter.com/search?q=coffee%20shop%20discovered'
+            ]
+            
             for i, tweet in enumerate(sample_tweets):
                 tweets.append({
                     'id': f'twitter_{i}',
                     'text': tweet,
                     'source': 'twitter',
                     'hashtags': [],
+                    'url': twitter_urls[i % len(twitter_urls)],
                     'timestamp': datetime.utcnow().isoformat()
                 })
             
