@@ -456,6 +456,7 @@ class RealDataStreamer:
                     "sentiment_label": sentiment_data["label"],
                     "confidence": sentiment_data["confidence"],
                     "category": headline.get('category', 'general'),
+                    "url": headline.get('url', ''),
                     "timestamp": datetime.utcnow().isoformat()
                 }
                 
