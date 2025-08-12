@@ -425,6 +425,7 @@ class RealDataStreamer:
                     "sentiment_label": sentiment_data["label"],
                     "confidence": sentiment_data["confidence"],
                     "video_title": comment.get('video_title', 'Unknown'),
+                    "url": comment.get('url', ''),
                     "timestamp": datetime.utcnow().isoformat()
                 }
                 
