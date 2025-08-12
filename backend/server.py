@@ -487,6 +487,7 @@ class RealDataStreamer:
                     "sentiment_label": sentiment_data["label"],
                     "confidence": sentiment_data["confidence"],
                     "hashtags": tweet.get('hashtags', []),
+                    "url": tweet.get('url', ''),
                     "timestamp": datetime.utcnow().isoformat()
                 }
                 
