@@ -435,12 +435,24 @@ class NewsAPICollector:
             ]
             
             headlines = []
+            news_urls = [
+                'https://www.bbc.com/news',
+                'https://www.cnn.com/world',
+                'https://www.reuters.com/science',
+                'https://www.bbc.com/news/science-environment',
+                'https://www.cnn.com/business',
+                'https://www.reuters.com/technology',
+                'https://www.bbc.com/news/health',
+                'https://www.cnn.com/world/environment'
+            ]
+            
             for i, headline in enumerate(sample_headlines):
                 headlines.append({
                     'id': f'news_{i}',
                     'text': headline,
                     'source': 'news',
                     'category': 'world',
+                    'url': news_urls[i % len(news_urls)],
                     'timestamp': datetime.utcnow().isoformat()
                 })
             
