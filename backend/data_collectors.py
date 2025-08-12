@@ -380,12 +380,24 @@ class YouTubeCommentsCollector:
             ]
             
             comments = []
+            video_urls = [
+                'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                'https://www.youtube.com/watch?v=fC7oUOUEEi4',
+                'https://www.youtube.com/watch?v=L_jWHffIx5E',
+                'https://www.youtube.com/watch?v=kffacxfA7G4',
+                'https://www.youtube.com/watch?v=ZZ5LpwO-An4',
+                'https://www.youtube.com/watch?v=hFZFjoX2cGg',
+                'https://www.youtube.com/watch?v=Ct6BUPvE2sM',
+                'https://www.youtube.com/watch?v=uelHwf8o7_U'
+            ]
+            
             for i, comment in enumerate(sample_comments):
                 comments.append({
                     'id': f'youtube_{i}',
                     'text': comment,
                     'source': 'youtube',
                     'video_title': f'Trending Video {i+1}',
+                    'url': video_urls[i % len(video_urls)],
                     'timestamp': datetime.utcnow().isoformat()
                 })
             
