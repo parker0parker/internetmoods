@@ -347,6 +347,7 @@ class GoogleTrendsCollector:
                             'interest_level': int(interest_level),
                             'text': text,
                             'source': 'google_trends',
+                            'url': f'https://trends.google.com/trends/explore?q={keyword}',
                             'timestamp': datetime.utcnow().isoformat()
                         })
             
