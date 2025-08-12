@@ -532,12 +532,24 @@ class PublicForumsCollector:
             ]
             
             posts = []
+            forum_urls = [
+                'https://www.reddit.com/r/getmotivated',
+                'https://news.ycombinator.com/',
+                'https://www.reddit.com/r/travel/',
+                'https://www.reddit.com/r/community/',
+                'https://www.reddit.com/r/motivation/',
+                'https://www.reddit.com/r/sustainability/',
+                'https://www.reddit.com/r/gratitude/',
+                'https://www.reddit.com/r/economics/'
+            ]
+            
             for i, post in enumerate(sample_posts):
                 posts.append({
                     'id': f'forum_{i}',
                     'text': post,
                     'source': 'forums',
                     'forum': 'public_discussion',
+                    'url': forum_urls[i % len(forum_urls)],
                     'timestamp': datetime.utcnow().isoformat()
                 })
             
