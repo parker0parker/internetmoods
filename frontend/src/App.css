@@ -451,25 +451,7 @@ body::before {
   border-radius: 50%;
 }
 
-.legend-colors {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-}
 
-.legend-title {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #e3e3e3;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  opacity: 0.8;
-}
-
-.legend-color.happy { color: #00ff88; }
-.legend-color.neutral { color: #ffaa00; }
-.legend-color.sad { color: #ff4466; }
 
 .sentiment-readout {
   text-align: center;
