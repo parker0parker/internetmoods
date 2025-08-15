@@ -686,9 +686,9 @@ async def periodic_broadcast():
     while True:
         if manager.active_connections and total_posts_analyzed > 0:
             # Calculate uptime
-            uptime_seconds = (datetime.utcnow() - app_start_time).total_seconds()
-            uptime_hours = int(uptime_seconds // 3600)
-            uptime_minutes = int((uptime_seconds % 3600) // 60)
+            uptime_seconds = int((datetime.utcnow() - app_start_time).total_seconds())
+            uptime_hours = uptime_seconds // 3600
+            uptime_minutes = (uptime_seconds % 3600) // 60
             uptime_str = f"{uptime_hours:02d}:{uptime_minutes:02d}"
             
             # Get top country timelines
