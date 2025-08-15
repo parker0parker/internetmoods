@@ -390,14 +390,18 @@ const CountryHappinessChart = ({ countryTimelines, title }) => {
     <div className="country-happiness-chart">
       <div className="chart-title">{title}</div>
       <div className="chart-legend country-legend">
-        {countryTimelines.slice(0, 7).map((country, index) => {
-          const colors = ['#00ff88', '#ffaa00', '#ff4466', '#44ff66', '#ff6644', '#ffffff', '#66aaff'];
-          return (
-            <span key={country.name} className="legend-item" style={{ color: colors[index] }}>
-              ■ {country.name.toLowerCase()} ({country.total_posts})
-            </span>
-          );
-        })}
+        {countryTimelines
+          .filter(c => c && c.timeline && Array.isArray(c.timeline) && c.timeline.length > 0)
+          .slice(0, 7)
+          .map((country, index) => {
+            const colors = ['#00ff88', '#ffaa00', '#ff4466', '#44ff66', '#ff6644', '#ffffff', '#66aaff'];
+            return (
+              <span key={country.name} className="legend-item" style={{ color: colors[index] }}>
+                ■ {country.name.toLowerCase()} ({country.total_posts})
+              </span>
+            );
+          })
+        }
       </div>
       <canvas ref={canvasRef} className="happiness-canvas" />
     </div>
