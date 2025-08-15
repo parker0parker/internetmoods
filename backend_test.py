@@ -582,7 +582,7 @@ class HappinessIndexTester:
         # Run data generation tests (these take time)
         print(f"\n--- Running Data Generation Tests ---")
         self.test_data_generation_over_time()
-        self.test_subreddit_diversity()
+        self.test_reddit_data_integration()
         
         # Summary
         print("\n" + "=" * 60)
