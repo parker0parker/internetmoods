@@ -753,19 +753,31 @@ function App() {
     return () => websocket.close();
   }, []);
 
-  // Add subtle scroll-based parallax effect for starfield
+  // Add smooth scroll-based parallax effect - stars move up when scrolling down
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const starfield = document.body;
       if (starfield) {
-        // Very subtle parallax effect - stars move at 10% of scroll speed
-        starfield.style.setProperty('--scroll-y', `${scrollY * 0.1}px`);
+        // Stars move up when scrolling down (negative value)
+        starfield.style.setProperty('--scroll-y', `${-scrollY * 0.2}px`);
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    // Use RAF for smoother animation
+    let ticking = false;
+    const smoothScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', smoothScroll, { passive: true });
+    return () => window.removeEventListener('scroll', smoothScroll);
   }, []);
 
   const getSentimentEmoji = (happiness) => {
