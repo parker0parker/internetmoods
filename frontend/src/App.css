@@ -405,6 +405,26 @@ body {
   padding: 2rem 0;
 }
 
+.sentiment-emoji {
+  font-size: 8rem;
+  line-height: 0.8;
+  margin-bottom: 1rem;
+  text-align: center;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    transform: scale(1);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
+  }
+  50% { 
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
+  }
+}
+
 .happiness-percentage {
   font-size: 6rem;
   font-weight: 100;
