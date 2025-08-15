@@ -87,6 +87,7 @@ recent_posts = []  # Store recent posts for display
 geographic_data = {}  # Store geographic sentiment data
 historical_data = deque(maxlen=1440)  # Store 24 hours of minute-by-minute data
 country_sentiment = {}  # Store country-specific sentiment data
+country_happiness_history = {}  # Store happiness timeline per country
 
 def generate_country_sentiment(base_happiness):
     """Generate country-specific sentiment data with significant variation"""
