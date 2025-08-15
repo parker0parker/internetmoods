@@ -547,7 +547,7 @@ body::before {
   background-color: #000000;
   border: 1px solid #e3e3e3;
   position: relative;
-  height: 300px;
+  height: 350px;
 }
 
 .chart-title {
