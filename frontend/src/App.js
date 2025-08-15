@@ -285,7 +285,7 @@ const CountryHappinessChart = ({ countryTimelines = [], title }) => {
 
       // Chart dimensions - leave more space at bottom for legend
       const padding = 50;
-      const bottomPadding = 80; // Extra space for legend
+      const bottomPadding = 100; // Extra space for legend at bottom
       const chartWidth = width/2 - padding * 2;
       const chartHeight = height/2 - padding - bottomPadding;
       
