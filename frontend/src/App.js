@@ -332,15 +332,12 @@ const CountryHappinessChart = ({ countryTimelines = [], title }) => {
         ctx.beginPath();
         
         let hasStarted = false;
-        country.timeline.forEach((happinessData, index) => {
-          // Extract happiness value - handle both number and object formats
-          const happiness = typeof happinessData === 'number' ? 
-            happinessData : 
-            (happinessData && typeof happinessData.happiness === 'number' ? 
-              happinessData.happiness : 50);
+        country.timeline.forEach((happiness, index) => {
+          // Ensure happiness is a valid number
+          const happinessValue = typeof happiness === 'number' && isFinite(happiness) ? happiness : 50;
           
           const x = padding + (index / (maxLength - 1)) * chartWidth;
-          const normalizedHappiness = Math.max(0, Math.min(1, (happiness - 10) / 80));
+          const normalizedHappiness = Math.max(0, Math.min(1, (happinessValue - 10) / 80));
           const y = padding + chartHeight - (normalizedHappiness * chartHeight);
           
           if (!hasStarted) {
@@ -361,14 +358,11 @@ const CountryHappinessChart = ({ countryTimelines = [], title }) => {
         
         // Draw data points
         ctx.fillStyle = color;
-        country.timeline.forEach((happinessData, index) => {
-          const happiness = typeof happinessData === 'number' ? 
-            happinessData : 
-            (happinessData && typeof happinessData.happiness === 'number' ? 
-              happinessData.happiness : 50);
+        country.timeline.forEach((happiness, index) => {
+          const happinessValue = typeof happiness === 'number' && isFinite(happiness) ? happiness : 50;
           
           const x = padding + (index / (maxLength - 1)) * chartWidth;
-          const normalizedHappiness = Math.max(0, Math.min(1, (happiness - 10) / 80));
+          const normalizedHappiness = Math.max(0, Math.min(1, (happinessValue - 10) / 80));
           const y = padding + chartHeight - (normalizedHappiness * chartHeight);
           
           ctx.beginPath();
