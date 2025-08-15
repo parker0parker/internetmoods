@@ -919,11 +919,11 @@ function App() {
         />
       </div>
 
-      {happinessData.happiness_trend.length > 5 && (
+      {happinessData.country_timelines.length > 0 && (
         <div className="chart-section">
-          <HappinessTimelineChart 
-            scores={happinessData.happiness_trend} 
-            title="HAPPINESS TIMELINE"
+          <CountryHappinessChart 
+            countryTimelines={happinessData.country_timelines} 
+            title="COUNTRY HAPPINESS TIMELINE"
           />
         </div>
       )}
