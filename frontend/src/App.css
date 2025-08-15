@@ -69,7 +69,7 @@ body::before {
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start; /* Changed to flex-start for top alignment */
   margin-bottom: 2rem;
   padding-bottom: 1rem;
 }
