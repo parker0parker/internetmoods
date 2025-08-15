@@ -762,7 +762,8 @@ function App() {
           source_breakdown: message.data.source_breakdown,
           happiness_trend: message.data.happiness_trend || prev.happiness_trend || [],
           country_sentiment: message.data.country_sentiment || prev.country_sentiment,
-          country_timelines: message.data.country_timelines || prev.country_timelines
+          country_timelines: message.data.country_timelines || prev.country_timelines,
+          uptime: message.data.uptime || prev.uptime
         }));
         
         if (message.data.recent_posts && Array.isArray(message.data.recent_posts)) {
