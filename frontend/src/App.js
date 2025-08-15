@@ -753,14 +753,14 @@ function App() {
     return () => websocket.close();
   }, []);
 
-  // Add scroll-based parallax effect for starfield
+  // Add subtle scroll-based parallax effect for starfield
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const starfield = document.body;
       if (starfield) {
-        // Create parallax effect by adjusting the background position
-        starfield.style.setProperty('--scroll-y', `${scrollY * 0.5}px`);
+        // Very subtle parallax effect - stars move at 10% of scroll speed
+        starfield.style.setProperty('--scroll-y', `${scrollY * 0.1}px`);
       }
     };
 
