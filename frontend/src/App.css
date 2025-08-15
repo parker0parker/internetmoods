@@ -24,24 +24,30 @@ body::before {
   position: fixed;
   top: 0;
   left: 0;
-  width: 200%;
-  height: 200%;
+  width: 100vw;
+  height: 100vh;
   background-image: 
-    radial-gradient(1px 1px at 20px 30px, #ffffff, transparent),
-    radial-gradient(1px 1px at 40px 70px, rgba(255,255,255,0.8), transparent),
-    radial-gradient(0.5px 0.5px at 90px 40px, rgba(255,255,255,0.6), transparent),
-    radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.4), transparent),
-    radial-gradient(0.5px 0.5px at 160px 30px, rgba(255,255,255,0.7), transparent),
-    radial-gradient(1px 1px at 200px 50px, rgba(255,255,255,0.5), transparent),
-    radial-gradient(0.5px 0.5px at 230px 90px, rgba(255,255,255,0.3), transparent),
-    radial-gradient(1px 1px at 270px 20px, rgba(255,255,255,0.6), transparent),
-    radial-gradient(0.5px 0.5px at 300px 60px, rgba(255,255,255,0.4), transparent),
-    radial-gradient(1px 1px at 340px 100px, rgba(255,255,255,0.8), transparent);
+    radial-gradient(2px 2px at 20px 30px, #ffffff, transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(2px 2px at 130px 80px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 160px 30px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(2px 2px at 200px 50px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 230px 90px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(2px 2px at 270px 20px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 300px 60px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 340px 100px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 380px 30px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(2px 2px at 420px 90px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 460px 50px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 500px 20px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 540px 80px, rgba(255,255,255,0.6), transparent);
   background-repeat: repeat;
-  background-size: 350px 200px;
-  animation: parallax-stars 120s linear infinite;
-  z-index: -1;
-  opacity: 0.6;
+  background-size: 600px 400px;
+  animation: parallax-stars 180s linear infinite;
+  z-index: -10;
+  opacity: 0.8;
+  pointer-events: none;
 }
 
 @keyframes parallax-stars {
