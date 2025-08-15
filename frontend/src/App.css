@@ -430,11 +430,10 @@ body::before {
   width: 500px;
   max-width: 100%;
   margin: -1rem auto 0;
-  background: radial-gradient(circle, #1a1a1a 0%, #000000 85%, #111111 100%);
+  background: radial-gradient(circle, #111111 0%, #000000 100%);
   position: relative;
   cursor: default;
   border-radius: 50%;
-  border: 1px solid rgba(227, 227, 227, 0.1);
 }
 
 .legend-colors {
