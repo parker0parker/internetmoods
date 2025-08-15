@@ -90,7 +90,9 @@ country_sentiment = {}  # Store country-specific sentiment data
 country_happiness_history = {}  # Store happiness timeline per country
 
 def generate_country_sentiment(base_happiness):
-    """Generate country-specific sentiment data with significant variation"""
+    """Generate country-specific sentiment data with significant variation and track history"""
+    global country_happiness_history
+    
     countries = [
         # North America
         'United States', 'Canada', 'Mexico',
@@ -179,6 +181,16 @@ def generate_country_sentiment(base_happiness):
         random_variation = random.uniform(-5, 5)
         country_happiness = max(10, min(90, base_happiness + base_modifier + random_variation))
         country_data[country] = round(country_happiness, 1)
+        
+        # Track happiness history per country
+        if country not in country_happiness_history:
+            country_happiness_history[country] = deque(maxlen=100)  # Store last 100 data points per country
+        
+        country_happiness_history[country].append({
+            'happiness': country_happiness,
+            'timestamp': datetime.utcnow().isoformat(),
+            'post_count': random.randint(1, 15)  # Simulate varying post counts
+        })
     
     return country_data
 
