@@ -331,7 +331,19 @@ body::before {
   }
   
   .header-controls {
-    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 1rem;
+  }
+  
+  .connection-indicator,
+  .uptime-indicator {
+    font-size: 0.7rem;
+  }
+  
+  .about-button {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.8rem;
   }
   
   .about-content {
