@@ -248,12 +248,12 @@ const WireframeGlobe = ({ happiness, countrySentiment, onCountryHover }) => {
   );
 };
 
-// Happiness Timeline Chart with Clean Line Graph
-const HappinessTimelineChart = ({ scores, title }) => {
+// Multi-Country Happiness Timeline Chart
+const CountryHappinessChart = ({ countryTimelines, title }) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
-    if (!scores.length || !canvasRef.current) return;
+    if (!countryTimelines?.length || !canvasRef.current) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -265,16 +265,27 @@ const HappinessTimelineChart = ({ scores, title }) => {
     ctx.fillRect(0, 0, width/2, height/2);
 
     // Chart dimensions
-    const padding = 40;
+    const padding = 50;
     const chartWidth = width/2 - padding * 2;
     const chartHeight = height/2 - padding * 2;
+    
+    // Country colors (space theme palette)
+    const countryColors = [
+      '#00ff88', // Bright green
+      '#ffaa00', // Orange
+      '#ff4466', // Red
+      '#44ff66', // Light green
+      '#ff6644', // Red-orange
+      '#ffffff', // White
+      '#66aaff'  // Blue
+    ];
     
     // Draw grid lines
     ctx.strokeStyle = '#333333';
     ctx.lineWidth = 0.5;
     ctx.globalAlpha = 0.3;
     
-    // Horizontal grid lines (happiness levels)
+    // Horizontal grid lines
     for (let i = 0; i <= 10; i++) {
       const y = padding + (i / 10) * chartHeight;
       ctx.beginPath();
@@ -283,8 +294,11 @@ const HappinessTimelineChart = ({ scores, title }) => {
       ctx.stroke();
     }
     
-    // Vertical grid lines (time intervals)
-    const timeIntervals = Math.min(20, scores.length);
+    // Find max timeline length for X-axis
+    const maxLength = Math.max(...countryTimelines.map(c => c.timeline.length));
+    
+    // Vertical grid lines
+    const timeIntervals = Math.min(10, maxLength);
     for (let i = 0; i <= timeIntervals; i++) {
       const x = padding + (i / timeIntervals) * chartWidth;
       ctx.beginPath();
@@ -295,21 +309,19 @@ const HappinessTimelineChart = ({ scores, title }) => {
     
     ctx.globalAlpha = 1;
     
-    // Draw happiness line
-    if (scores.length > 1) {
-      ctx.strokeStyle = '#e3e3e3';
+    // Draw country lines
+    countryTimelines.forEach((country, countryIndex) => {
+      if (!country.timeline.length) return;
+      
+      const color = countryColors[countryIndex % countryColors.length];
+      ctx.strokeStyle = color;
       ctx.lineWidth = 2;
       ctx.beginPath();
       
-      const maxScore = Math.max(...scores);
-      const minScore = Math.min(...scores);
-      const scoreRange = maxScore - minScore || 1;
-      
-      scores.forEach((score, index) => {
-        const x = padding + (index / (scores.length - 1)) * chartWidth;
-        // Map score to chart height (inverted because canvas y increases downward)
-        const normalizedScore = (score - minScore) / scoreRange;
-        const y = padding + chartHeight - (normalizedScore * chartHeight);
+      country.timeline.forEach((happiness, index) => {
+        const x = padding + (index / (maxLength - 1)) * chartWidth;
+        const normalizedHappiness = (happiness - 10) / 80; // 10-90 range mapped to 0-1
+        const y = padding + chartHeight - (normalizedHappiness * chartHeight);
         
         if (index === 0) {
           ctx.moveTo(x, y);
@@ -320,69 +332,44 @@ const HappinessTimelineChart = ({ scores, title }) => {
       
       ctx.stroke();
       
-      // Add glow effect to the line
-      ctx.shadowColor = '#e3e3e3';
+      // Add subtle glow effect
+      ctx.shadowColor = color;
       ctx.shadowBlur = 3;
       ctx.stroke();
       ctx.shadowBlur = 0;
       
       // Draw data points
-      ctx.fillStyle = '#e3e3e3';
-      scores.forEach((score, index) => {
-        const x = padding + (index / (scores.length - 1)) * chartWidth;
-        const normalizedScore = (score - minScore) / scoreRange;
-        const y = padding + chartHeight - (normalizedScore * chartHeight);
+      ctx.fillStyle = color;
+      country.timeline.forEach((happiness, index) => {
+        const x = padding + (index / (maxLength - 1)) * chartWidth;
+        const normalizedHappiness = (happiness - 10) / 80;
+        const y = padding + chartHeight - (normalizedHappiness * chartHeight);
         
         ctx.beginPath();
         ctx.arc(x, y, 2, 0, Math.PI * 2);
         ctx.fill();
       });
-      
-      // Current happiness indicator
-      if (scores.length > 0) {
-        const currentScore = scores[scores.length - 1];
-        const normalizedScore = (currentScore - minScore) / scoreRange;
-        const currentY = padding + chartHeight - (normalizedScore * chartHeight);
-        
-        // Draw current level line
-        ctx.strokeStyle = getSentimentColor(currentScore);
-        ctx.lineWidth = 1;
-        ctx.setLineDash([5, 5]);
-        ctx.beginPath();
-        ctx.moveTo(padding, currentY);
-        ctx.lineTo(padding + chartWidth, currentY);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        
-        // Current value label
-        ctx.fillStyle = getSentimentColor(currentScore);
-        ctx.textAlign = 'left';
-        ctx.font = '12px "Noto Sans Mono"';
-        ctx.fillText(`${currentScore.toFixed(1)}%`, padding + chartWidth + 10, currentY + 4);
-      }
-    }
+    });
     
-    // Draw labels
+    // Draw Y-axis labels (happiness percentages)
     ctx.fillStyle = '#666666';
     ctx.font = '10px "Noto Sans Mono"';
     ctx.textAlign = 'right';
     
-    // Y-axis labels (happiness percentages)
     for (let i = 0; i <= 10; i++) {
       const y = padding + (i / 10) * chartHeight;
-      const value = Math.round(100 - (i * 10)); // Inverted because higher happiness is at top
+      const value = Math.round(90 - (i * 8)); // 90-10 range
       ctx.fillText(`${value}%`, padding - 10, y + 3);
     }
     
-    // X-axis time labels
+    // Draw time labels
     ctx.textAlign = 'center';
     ctx.font = '9px "Noto Sans Mono"';
     const now = new Date();
-    const timeLabels = Math.min(5, Math.floor(scores.length / 10)); // Show max 5 time labels
     
-    for (let i = 0; i <= timeLabels; i++) {
-      const x = padding + (i / timeLabels) * chartWidth;
-      const minutesAgo = Math.round((scores.length - 1) * (1 - i / timeLabels) * 2); // Assuming ~2 min intervals
+    for (let i = 0; i <= 5; i++) {
+      const x = padding + (i / 5) * chartWidth;
+      const minutesAgo = Math.round((maxLength - 1) * (1 - i / 5) * 1.5);
       const labelTime = new Date(now.getTime() - minutesAgo * 60000);
       const timeLabel = labelTime.toLocaleTimeString('en-US', { 
         hour: '2-digit', 
@@ -392,22 +379,20 @@ const HappinessTimelineChart = ({ scores, title }) => {
       ctx.fillText(timeLabel, x, padding + chartHeight + 20);
     }
     
-  }, [scores]);
-
-  // Helper function for sentiment colors
-  const getSentimentColor = (happiness) => {
-    if (happiness >= 70) return '#00ff88';
-    if (happiness >= 60) return '#44ff66';
-    if (happiness >= 50) return '#ffaa00';
-    if (happiness >= 40) return '#ff6644';
-    return '#ff4466';
-  };
+  }, [countryTimelines]);
 
   return (
-    <div className="happiness-chart">
+    <div className="country-happiness-chart">
       <div className="chart-title">{title}</div>
-      <div className="chart-legend">
-        <span className="legend-item" style={{ color: '#e3e3e3' }}>■ happiness level over time</span>
+      <div className="chart-legend country-legend">
+        {countryTimelines.slice(0, 7).map((country, index) => {
+          const colors = ['#00ff88', '#ffaa00', '#ff4466', '#44ff66', '#ff6644', '#ffffff', '#66aaff'];
+          return (
+            <span key={country.name} className="legend-item" style={{ color: colors[index] }}>
+              ■ {country.name.toLowerCase()} ({country.total_posts})
+            </span>
+          );
+        })}
       </div>
       <canvas ref={canvasRef} className="happiness-canvas" />
     </div>
