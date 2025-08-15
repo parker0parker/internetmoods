@@ -819,14 +819,15 @@ body::before {
   }
   
   .header {
-    flex-direction: column;
+    flex-direction: row;  /* Keep row layout on mobile */
+    justify-content: space-between;  /* Keep space-between */
+    align-items: flex-start;  /* Align to top */
     gap: 1rem;
-    text-align: center;
     margin-bottom: 1.5rem;
   }
   
   .header-controls {
-    align-items: center;
+    align-items: flex-end;  /* Keep right alignment */
   }
   
   .main-display {
