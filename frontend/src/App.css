@@ -438,9 +438,9 @@ body::before {
   cursor: default;
   border-radius: 50%;
   box-shadow: 
-    0 0 30px rgba(227, 227, 227, 0.15),
-    0 0 60px rgba(227, 227, 227, 0.08),
-    0 0 90px rgba(227, 227, 227, 0.04);
+    inset 0 0 60px rgba(227, 227, 227, 0.1),
+    inset 0 0 120px rgba(227, 227, 227, 0.05),
+    inset 0 -20px 40px rgba(227, 227, 227, 0.08);
 }
 
 .legend-colors {
