@@ -686,9 +686,19 @@ const AboutSection = ({ isVisible, onClose }) => {
         <div className="about-section">
           <h3>visualization</h3>
           <p>
-            The 3D glass emoji face reflects the current emotional state, rotating and changing 
-            expression based on sentiment. The Joy Division-inspired wave visualization shows 
-            sentiment patterns over time, with colors indicating emotional intensity.
+            The interface features a space observatory theme with multiple visualization layers:
+          </p>
+          <ul>
+            <li><strong>Starfield Background</strong> - Animated stars with parallax scrolling create depth and immersion</li>
+            <li><strong>3D Wireframe Globe</strong> - Real-time country sentiment mapping with color-coded emotional states</li>
+            <li><strong>Sentiment Emoji</strong> - Dynamic emotional expression that changes with global happiness levels</li>
+            <li><strong>Country Timeline Charts</strong> - Multi-line graphs showing happiness trends for top countries over time</li>
+            <li><strong>Real-time Statistics</strong> - Live data feeds showing posts analyzed from all seven sources</li>
+          </ul>
+          <p>
+            The globe displays individual countries as colored dots: green for happy regions, 
+            orange for neutral, and red for sad areas. Country-specific happiness trends are 
+            tracked and displayed in detailed timeline charts.
           </p>
         </div>
 
