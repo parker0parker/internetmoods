@@ -605,13 +605,19 @@ const AboutSection = ({ isVisible, onClose }) => {
         <div className="about-section">
           <h3>how it works</h3>
           <p>
-            The system continuously collects posts from Reddit, Mastodon, and Google Trends data. 
-            Each piece of content is processed through advanced sentiment analysis algorithms 
-            including VADER, TextBlob, and contextual analysis to determine emotional tone.
+            The system continuously collects posts from seven major data sources: Reddit, Mastodon, 
+            Google Trends, YouTube, News headlines, Twitter/X, and public forums. Each piece of 
+            content is processed through advanced sentiment analysis algorithms including VADER, 
+            TextBlob, and contextual analysis to determine emotional tone.
           </p>
           <p>
-            The happiness index is calculated as a weighted average of all analyzed content, 
-            updated in real-time every 10 seconds.
+            The global happiness index is calculated as a weighted average of all analyzed content, 
+            updated in real-time every 5 seconds. Country-specific sentiment is tracked individually, 
+            creating detailed happiness timelines for regions with sufficient data (minimum 5 posts).
+          </p>
+          <p>
+            The space observatory interface provides an immersive experience, displaying Earth's 
+            emotional pulse as viewed from orbit with realistic star movement and atmospheric effects.
           </p>
         </div>
 
