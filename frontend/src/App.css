@@ -426,12 +426,13 @@ body {
 }
 
 .happiness-percentage {
-  font-size: 6rem;
+  font-size: 4rem;
   font-weight: 100;
   color: #e3e3e3;
   line-height: 0.8;
   margin-bottom: 1rem;
   letter-spacing: -0.03em;
+  text-align: center;
 }
 
 .sentiment-word {
