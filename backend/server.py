@@ -615,6 +615,39 @@ async def get_status_checks():
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
 
+@api_router.get("/country-happiness-timeline")
+async def get_country_happiness_timeline():
+    """Get happiness timeline data for top countries with sufficient data"""
+    global country_happiness_history
+    
+    # Get top countries with most data points and minimum 5 data points
+    country_data = {}
+    for country, history in country_happiness_history.items():
+        if len(history) >= 5:  # Minimum threshold
+            total_posts = sum(point['post_count'] for point in history)
+            country_data[country] = {
+                'name': country,
+                'total_posts': total_posts,
+                'timeline': [
+                    {
+                        'happiness': point['happiness'],
+                        'timestamp': point['timestamp']
+                    } for point in history
+                ]
+            }
+    
+    # Sort by total posts and get top 5-7 countries
+    top_countries = sorted(
+        country_data.values(), 
+        key=lambda x: x['total_posts'], 
+        reverse=True
+    )[:7]
+    
+    return {
+        'countries': top_countries,
+        'last_updated': datetime.utcnow().isoformat()
+    }
+
 # Include the router in the main app
 app.include_router(api_router)
 
