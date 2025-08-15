@@ -875,6 +875,43 @@ function App() {
     return '#ff4466';
   };
 
+  // Helper functions to get happiest and saddest countries
+  const getHappiestCountry = (countrySentiment) => {
+    if (!countrySentiment || Object.keys(countrySentiment).length === 0) {
+      return 'n/a';
+    }
+    
+    let happiestCountry = 'n/a';
+    let highestSentiment = 0;
+    
+    Object.entries(countrySentiment).forEach(([country, sentiment]) => {
+      if (sentiment > highestSentiment) {
+        highestSentiment = sentiment;
+        happiestCountry = country.toLowerCase();
+      }
+    });
+    
+    return happiestCountry;
+  };
+
+  const getSaddestCountry = (countrySentiment) => {
+    if (!countrySentiment || Object.keys(countrySentiment).length === 0) {
+      return 'n/a';
+    }
+    
+    let saddestCountry = 'n/a';
+    let lowestSentiment = 100;
+    
+    Object.entries(countrySentiment).forEach(([country, sentiment]) => {
+      if (sentiment < lowestSentiment) {
+        lowestSentiment = sentiment;
+        saddestCountry = country.toLowerCase();
+      }
+    });
+    
+    return saddestCountry;
+  };
+
   return (
     <div className="app">
       <div className="header">
