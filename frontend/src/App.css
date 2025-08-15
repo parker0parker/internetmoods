@@ -819,7 +819,7 @@ body::before {
   .header {
     flex-direction: row;
     justify-content: space-between;
-    align-items: baseline; /* Changed to baseline for horizontal alignment */
+    align-items: flex-start; /* Keep top alignment on mobile */
     gap: 1rem;
     margin-bottom: 1.5rem;
     text-align: left;  /* Keep left alignment */
