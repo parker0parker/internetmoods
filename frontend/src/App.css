@@ -51,12 +51,12 @@ body::before {
   pointer-events: none;
 }
 
-@keyframes drift-stars {
+@keyframes gentle-drift {
   0% {
-    transform: translateY(0px) translateX(0px);
+    transform: translateY(0px);
   }
   100% {
-    transform: translateY(-300px) translateX(-50px);
+    transform: translateY(-20vh);
   }
 }
 
