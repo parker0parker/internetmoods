@@ -472,8 +472,12 @@ body::before {
 .legend-color.sad { color: #ff4466; }
 
 .sentiment-readout {
-  text-align: left;
+  text-align: center;
   padding: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .sentiment-emoji {
@@ -502,9 +506,88 @@ body::before {
   font-family: 'Noto Sans Mono', monospace;
   color: #e3e3e3;
   line-height: 0.8;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
   letter-spacing: -0.03em;
   text-align: center;
+}
+
+.globe-legend {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.legend-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #e3e3e3;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.8;
+  margin-bottom: 0.75rem;
+}
+
+.legend-colors {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.legend-color.happy { color: #00ff88; }
+.legend-color.neutral { color: #ffaa00; }
+.legend-color.sad { color: #ff4466; }
+
+.country-extremes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.extreme-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #e3e3e3;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.8;
+}
+
+.extreme-countries {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.extreme-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.extreme-label {
+  color: #999999;
+  font-weight: 400;
+}
+
+.extreme-country {
+  font-weight: 600;
+}
+
+.extreme-country.happy {
+  color: #00ff88;
+}
+
+.extreme-country.sad {
+  color: #ff4466;
 }
 
 .sentiment-word {
