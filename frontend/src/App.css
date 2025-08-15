@@ -562,7 +562,26 @@ body::before {
   text-align: center;
 }
 
-/* Stats Grid */
+/* Stats Section */
+.stats-section {
+  margin-bottom: 4rem;
+  padding: 2rem 0;
+  border-top: 1px solid #e3e3e3;
+  border-bottom: 1px solid #e3e3e3;
+}
+
+.total-stat-centered {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.source-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
