@@ -681,16 +681,36 @@ async def startup_event():
     print("Real-time happiness index data streaming started!")
 
 async def periodic_broadcast():
-    """Periodically broadcast happiness updates"""
+    """Periodically broadcast happiness updates including country timelines"""
     while True:
         if manager.active_connections and total_posts_analyzed > 0:
+            # Get top country timelines
+            country_timelines = {}
+            for country, history in country_happiness_history.items():
+                if len(history) >= 5:  # Minimum threshold
+                    total_posts = sum(point['post_count'] for point in history)
+                    country_timelines[country] = {
+                        'name': country,
+                        'total_posts': total_posts,
+                        'timeline': [point['happiness'] for point in history]
+                    }
+            
+            # Sort and get top 5 countries
+            top_countries = sorted(
+                country_timelines.values(), 
+                key=lambda x: x['total_posts'], 
+                reverse=True
+            )[:5]
+            
             message = {
                 "type": "happiness_update",
                 "data": {
                     "current_happiness": current_happiness,
                     "total_analyzed": total_posts_analyzed,
                     "source_breakdown": source_breakdown.copy(),
+                    "happiness_trend": list(happiness_scores)[-20:],  # Global trend
                     "country_sentiment": country_sentiment.copy(),
+                    "country_timelines": top_countries,  # New country timeline data
                     "recent_posts": recent_posts[:8]  # Send last 8 posts
                 }
             }
