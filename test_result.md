@@ -188,6 +188,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "WebSocket connection at /api/ws working perfectly. Successfully connects, sends initial status, and broadcasts periodic happiness updates every 5 seconds. Connection manager handles multiple clients properly."
+      - working: true
+        agent: "testing"
+        comment: "Enhanced WebSocket functionality tested successfully. WebSocket messages now include country_timelines data with 5 countries, uptime calculation in HH:MM format (00:12), and country_sentiment data for 73 countries. All enhanced features working correctly with periodic broadcasts every 5 seconds."
 
   - task: "Subreddit Diversity"
     implemented: true
