@@ -374,6 +374,24 @@ const HappinessTimelineChart = ({ scores, title }) => {
       ctx.fillText(`${value}%`, padding - 10, y + 3);
     }
     
+    // X-axis time labels
+    ctx.textAlign = 'center';
+    ctx.font = '9px "Noto Sans Mono"';
+    const now = new Date();
+    const timeLabels = Math.min(5, Math.floor(scores.length / 10)); // Show max 5 time labels
+    
+    for (let i = 0; i <= timeLabels; i++) {
+      const x = padding + (i / timeLabels) * chartWidth;
+      const minutesAgo = Math.round((scores.length - 1) * (1 - i / timeLabels) * 2); // Assuming ~2 min intervals
+      const labelTime = new Date(now.getTime() - minutesAgo * 60000);
+      const timeLabel = labelTime.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false 
+      });
+      ctx.fillText(timeLabel, x, padding + chartHeight + 20);
+    }
+    
   }, [scores]);
 
   // Helper function for sentiment colors
