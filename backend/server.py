@@ -685,6 +685,12 @@ async def periodic_broadcast():
     """Periodically broadcast happiness updates including country timelines"""
     while True:
         if manager.active_connections and total_posts_analyzed > 0:
+            # Calculate uptime
+            uptime_seconds = (datetime.utcnow() - app_start_time).total_seconds()
+            uptime_hours = int(uptime_seconds // 3600)
+            uptime_minutes = int((uptime_seconds % 3600) // 60)
+            uptime_str = f"{uptime_hours:02d}:{uptime_minutes:02d}"
+            
             # Get top country timelines
             country_timelines = {}
             for country, history in country_happiness_history.items():
@@ -721,7 +727,8 @@ async def periodic_broadcast():
                     "happiness_trend": list(happiness_scores)[-20:],  # Global trend
                     "country_sentiment": country_sentiment.copy(),
                     "country_timelines": simplified_countries,  # Send simplified data
-                    "recent_posts": recent_posts[:8]  # Send last 8 posts
+                    "recent_posts": recent_posts[:8],  # Send last 8 posts
+                    "uptime": uptime_str  # Add uptime
                 }
             }
             await manager.broadcast(message)
