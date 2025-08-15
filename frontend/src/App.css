@@ -41,7 +41,7 @@ body::before {
     radial-gradient(circle at 15% 64%, #ffffff 1px, transparent 2px),
     radial-gradient(circle at 85% 29%, rgba(255,255,255,0.9) 1px, transparent 2px);
   background-size: 100vw 100vh;
-  background-position: 0 calc(var(--scroll-y, 0px) * 0.1);
+  background-position: 0 calc(var(--scroll-y, 0px));
   animation: gentle-drift 600s linear infinite;
   z-index: -10;
   opacity: 1;
