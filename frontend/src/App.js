@@ -837,9 +837,6 @@ function App() {
           >
             {happinessData.current_happiness.toFixed(1)}%
           </div>
-          <div className="sentiment-word">
-            {getSentimentText(happinessData.current_happiness)}
-          </div>
           <div className="globe-legend">
             <div className="legend-title">global sentiment</div>
             <div className="legend-colors">
