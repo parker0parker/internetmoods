@@ -19,7 +19,7 @@ body {
   --scroll-y: 0px;
 }
 
-/* Lightweight Starfield Background */
+/* Better Starfield Background */
 body::before {
   content: '';
   position: fixed;
@@ -27,28 +27,27 @@ body::before {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-image: 
-    radial-gradient(2px 2px at 20px 30px, #ffffff, transparent),
-    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.9), transparent),
-    radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.8), transparent),
-    radial-gradient(2px 2px at 130px 80px, rgba(255,255,255,0.7), transparent),
-    radial-gradient(1px 1px at 160px 30px, rgba(255,255,255,0.9), transparent),
-    radial-gradient(2px 2px at 200px 50px, rgba(255,255,255,0.8), transparent),
-    radial-gradient(1px 1px at 230px 90px, rgba(255,255,255,0.6), transparent),
-    radial-gradient(2px 2px at 270px 20px, rgba(255,255,255,0.9), transparent),
-    radial-gradient(1px 1px at 300px 60px, rgba(255,255,255,0.7), transparent),
-    radial-gradient(2px 2px at 340px 100px, rgba(255,255,255,0.8), transparent),
-    radial-gradient(1px 1px at 380px 30px, rgba(255,255,255,0.6), transparent),
-    radial-gradient(2px 2px at 420px 90px, rgba(255,255,255,0.9), transparent),
-    radial-gradient(1px 1px at 460px 50px, rgba(255,255,255,0.7), transparent),
-    radial-gradient(2px 2px at 500px 20px, rgba(255,255,255,0.8), transparent),
-    radial-gradient(1px 1px at 540px 80px, rgba(255,255,255,0.6), transparent);
-  background-repeat: repeat;
-  background-size: 600px 400px;
+  background: 
+    radial-gradient(circle at 15% 25%, white 1px, transparent 1px),
+    radial-gradient(circle at 85% 15%, rgba(255,255,255,0.8) 0.5px, transparent 0.5px),
+    radial-gradient(circle at 45% 75%, white 1px, transparent 1px),
+    radial-gradient(circle at 75% 45%, rgba(255,255,255,0.6) 0.5px, transparent 0.5px),
+    radial-gradient(circle at 25% 85%, rgba(255,255,255,0.9) 1px, transparent 1px),
+    radial-gradient(circle at 95% 75%, white 0.5px, transparent 0.5px),
+    radial-gradient(circle at 5% 55%, rgba(255,255,255,0.7) 0.5px, transparent 0.5px),
+    radial-gradient(circle at 55% 5%, white 1px, transparent 1px),
+    radial-gradient(circle at 35% 35%, rgba(255,255,255,0.8) 0.5px, transparent 0.5px),
+    radial-gradient(circle at 65% 85%, rgba(255,255,255,0.6) 1px, transparent 1px),
+    radial-gradient(circle at 80% 60%, white 0.5px, transparent 0.5px),
+    radial-gradient(circle at 20% 70%, rgba(255,255,255,0.9) 0.5px, transparent 0.5px),
+    radial-gradient(circle at 90% 30%, rgba(255,255,255,0.7) 1px, transparent 1px),
+    radial-gradient(circle at 10% 40%, white 0.5px, transparent 0.5px),
+    radial-gradient(circle at 70% 20%, rgba(255,255,255,0.8) 0.5px, transparent 0.5px);
+  background-size: 400px 300px, 600px 400px, 500px 350px, 450px 320px, 550px 380px;
   background-position: 0 var(--scroll-y, 0px);
-  animation: parallax-stars 180s linear infinite;
+  animation: drift-stars 240s linear infinite;
   z-index: -10;
-  opacity: 0.8;
+  opacity: 0.6;
   pointer-events: none;
 }
 
