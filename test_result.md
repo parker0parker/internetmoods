@@ -369,7 +369,6 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Country Happiness Timeline API"
     - "Layout Issues - Chart Legend Overlap"
     - "Global Sentiment Legend Alignment"
     - "Missing Helper Functions"
