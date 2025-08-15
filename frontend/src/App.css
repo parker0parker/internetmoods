@@ -822,18 +822,23 @@ body::before {
   .main-title {
     font-size: 1.4rem; /* Smaller for mobile */
     line-height: 1.1;
+    text-align: left;  /* Ensure title stays left */
   }
   
   .header {
-    flex-direction: row;  /* Keep row layout on mobile */
-    justify-content: space-between;  /* Keep space-between */
-    align-items: flex-start;  /* Align to top */
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start; /* Changed to flex-start for better alignment */
     gap: 1rem;
     margin-bottom: 1.5rem;
+    text-align: left;  /* Keep left alignment */
   }
   
   .header-controls {
-    align-items: flex-end;  /* Keep right alignment */
+    align-items: flex-end;
+    flex-direction: column;  /* Stack controls vertically */
+    gap: 0.5rem;
+    margin-top: 0; /* Remove any top margin */
   }
   
   .main-display {
