@@ -559,9 +559,20 @@ class HappinessIndexTester:
             print(f"\n--- Running {test_name} ---")
             test_func()
         
-        # Run WebSocket test
+        # NEW FEATURE TESTS - Priority from review request
+        print(f"\n--- Running NEW FEATURE Tests ---")
+        print(f"\n--- Running Country Happiness Timeline API Test ---")
+        self.test_country_happiness_timeline_api()
+        
+        print(f"\n--- Running All Data Sources Test ---")
+        self.test_all_data_sources_working()
+        
+        # Run WebSocket tests
         print(f"\n--- Running WebSocket Test ---")
         self.run_websocket_test()
+        
+        print(f"\n--- Running Enhanced WebSocket Test (Country Timelines & Uptime) ---")
+        self.run_enhanced_websocket_test()
         
         # Run data generation tests (these take time)
         print(f"\n--- Running Data Generation Tests ---")
