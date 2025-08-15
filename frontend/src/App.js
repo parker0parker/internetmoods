@@ -955,10 +955,10 @@ function App() {
         />
       </div>
 
-      {happinessData.country_timelines.length > 0 && (
+      {happinessData.country_timelines && happinessData.country_timelines.length > 0 && (
         <div className="chart-section">
           <CountryHappinessChart 
-            countryTimelines={happinessData.country_timelines} 
+            countryTimelines={happinessData.country_timelines || []} 
             title="COUNTRY HAPPINESS TIMELINE"
           />
         </div>
