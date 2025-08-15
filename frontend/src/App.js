@@ -759,7 +759,7 @@ function App() {
           current_happiness: message.data.current_happiness,
           total_posts_analyzed: message.data.total_analyzed,
           source_breakdown: message.data.source_breakdown,
-          happiness_trend: message.data.happiness_trend || [...prev.happiness_trend.slice(-30), message.data.current_happiness],
+          happiness_trend: message.data.happiness_trend || prev.happiness_trend || [],
           country_sentiment: message.data.country_sentiment || prev.country_sentiment,
           country_timelines: message.data.country_timelines || prev.country_timelines
         }));
