@@ -283,9 +283,9 @@ const CountryHappinessChart = ({ countryTimelines = [], title }) => {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, width/2, height/2);
 
-      // Chart dimensions - leave more space at bottom for legend
-      const padding = 50;
-      const bottomPadding = 100; // Extra space for legend at bottom
+      // Chart dimensions - optimized to fill container
+      const padding = 20; // Reduced padding for better space utilization
+      const bottomPadding = 30; // Reduced bottom padding - legend is now positioned absolutely
       const chartWidth = width/2 - padding * 2;
       const chartHeight = height/2 - padding - bottomPadding;
       
