@@ -380,7 +380,7 @@ const CountryHappinessChart = ({ countryTimelines = [], title }) => {
       for (let i = 0; i <= 10; i++) {
         const y = padding + (i / 10) * chartHeight;
         const value = Math.round(90 - (i * 8));
-        ctx.fillText(`${value}%`, padding - 10, y + 3);
+        ctx.fillText(`${value}%`, padding - 5, y + 3); // Reduced offset from 10 to 5
       }
       
       // Draw time labels
@@ -397,7 +397,7 @@ const CountryHappinessChart = ({ countryTimelines = [], title }) => {
           minute: '2-digit',
           hour12: false 
         });
-        ctx.fillText(timeLabel, x, padding + chartHeight + 20);
+        ctx.fillText(timeLabel, x, padding + chartHeight + 15); // Reduced offset from 20 to 15
       }
       
     } catch (error) {
