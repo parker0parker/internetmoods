@@ -933,7 +933,7 @@ body::before {
   }
   
   .happiness-canvas {
-    height: calc(100% - 50px); /* Adjust for smaller legend */
+    height: calc(100% - 40px); /* Further reduced for mobile to maximize chart space */
   }
   
   .country-legend {
