@@ -764,7 +764,7 @@ function App() {
           country_timelines: message.data.country_timelines || prev.country_timelines
         }));
         
-        if (message.data.recent_posts) {
+        if (message.data.recent_posts && Array.isArray(message.data.recent_posts)) {
           setRecentPosts(message.data.recent_posts.slice(0, 8));
         }
       }
