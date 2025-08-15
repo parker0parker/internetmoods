@@ -429,16 +429,17 @@ body::before {
 /* Globe container cursor management */
 .globe-container {
   height: 500px;
-  width: 100%;
+  width: 500px;
+  max-width: 100%;
+  margin: -1rem auto 0;
   background: radial-gradient(circle, #111111 0%, #000000 100%);
   position: relative;
   cursor: default;
-  margin-top: -1rem;
   border-radius: 50%;
   box-shadow: 
-    0 0 50px rgba(227, 227, 227, 0.1),
-    0 0 100px rgba(227, 227, 227, 0.05),
-    inset 0 0 50px rgba(227, 227, 227, 0.02);
+    0 0 30px rgba(227, 227, 227, 0.15),
+    0 0 60px rgba(227, 227, 227, 0.08),
+    0 0 90px rgba(227, 227, 227, 0.04);
 }
 
 .legend-colors {
