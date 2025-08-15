@@ -967,7 +967,7 @@ function App() {
       <div className="posts-section">
         <div className="section-title">RECENT TRANSMISSIONS</div>
         <div className="posts-grid">
-          {recentPosts.map((post, index) => (
+          {(recentPosts || []).map((post, index) => (
             <PostCard key={`${post.id}-${index}`} post={post} />
           ))}
         </div>
