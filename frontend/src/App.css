@@ -273,7 +273,7 @@ body {
   font-family: 'Noto Sans', sans-serif;
   letter-spacing: 0.1em;
   color: #e3e3e3;
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 /* Responsive updates for header */
