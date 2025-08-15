@@ -51,12 +51,12 @@ body::before {
   pointer-events: none;
 }
 
-@keyframes parallax-stars {
+@keyframes drift-stars {
   0% {
-    transform: translateY(0px);
+    transform: translateY(0px) translateX(0px);
   }
   100% {
-    transform: translateY(-400px);
+    transform: translateY(-300px) translateX(-50px);
   }
 }
 
