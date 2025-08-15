@@ -872,6 +872,9 @@ function App() {
             <span className={`status-dot ${isConnected ? 'live' : 'offline'}`}></span>
             {isConnected ? 'LIVE' : 'OFFLINE'}
           </div>
+          <div className="uptime-indicator">
+            <span>UPTIME: {happinessData.uptime}</span>
+          </div>
           <button 
             className="about-button"
             onClick={() => setShowAbout(true)}
