@@ -322,45 +322,7 @@ body::before {
   line-height: 0.9;
 }
 
-/* Responsive updates for header */
-@media (max-width: 768px) {
-  .header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-    text-align: left;  /* Keep left alignment */
-  }
-  
-  .main-title {
-    text-align: left;  /* Ensure title stays left */
-  }
-  
-  .header-controls {
-    align-items: flex-end;
-    flex-direction: column;  /* Stack controls vertically */
-    gap: 0.5rem;
-  }
-  
-  .connection-indicator,
-  .uptime-indicator {
-    font-size: 0.7rem;
-  }
-  
-  .about-button {
-    font-size: 0.7rem;
-    padding: 0.4rem 0.8rem;
-  }
-  
-  .about-content {
-    padding: 2rem;
-    margin: 1rem;
-  }
-  
-  .about-title {
-    font-size: 1.4rem;
-  }
-}
+
 
 .connection-indicator {
   display: flex;
