@@ -76,8 +76,9 @@ body::before {
 
 .header-controls {
   display: flex;
-  align-items: center;
-  gap: 2rem;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
 }
 
 .about-button {
