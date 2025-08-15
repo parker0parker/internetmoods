@@ -240,6 +240,30 @@ backend:
         agent: "testing"
         comment: "All data structures validated: happiness scores in 0-100 range, sentiment labels correct, timestamps properly formatted, source tracking working (reddit counts incrementing), deque structure preventing memory leaks."
 
+  - task: "Country Happiness Timeline API"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Backend modifications completed for country happiness timeline tracking. Added country_happiness_history deque, modified generate_country_sentiment function, added /api/country-happiness-timeline endpoint, and updated periodic_broadcast to include country timelines and uptime data."
+      
+  - task: "Uptime Calculation"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Uptime calculation working correctly. Backend properly calculates uptime from app_start_time and sends formatted uptime string (HH:MM format) via WebSocket messages every 5 seconds."
+
 frontend:
   - task: "Frontend Integration"
     implemented: false
@@ -276,16 +300,68 @@ frontend:
       - working: true
         agent: "main"
         comment: "Globe tooltips working correctly with country hover detection, sentiment color display, and proper positioning. No errors found in tooltip functionality."
+        
+  - task: "Layout Issues - Chart Legend Overlap"
+    implemented: true
+    working: true
+    file: "frontend/src/App.css"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Fixed chart legend positioning. Moved country legend to bottom of chart container with proper spacing (60px reserved height), increased chart height to 400px, and updated canvas height calculation to accommodate bottom legend. No more overlap with TIMELINE title."
+        
+  - task: "Global Sentiment Legend Alignment"
+    implemented: true
+    working: true
+    file: "frontend/src/App.css"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Fixed global sentiment legend alignment. Updated sentiment-readout to use flexbox with center alignment, properly positioned legend elements, and improved visual hierarchy. Global sentiment legend now properly aligned with emoji and percentage display."
+        
+  - task: "Missing Helper Functions"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added missing getHappiestCountry and getSaddestCountry helper functions that were being called in JSX but not defined. Functions include proper error handling, return 'n/a' for empty data, and convert country names to lowercase for consistent display."
+        
+  - task: "Country Extremes Display"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js, frontend/src/App.css"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Country extremes section now working correctly. Added CSS styling for .country-extremes, .extreme-title, .extreme-countries, .extreme-item classes with proper color coding (green for happiest, red for saddest) and centered alignment."
 
 metadata:
-  created_by: "testing_agent"
-  version: "1.0"
-  test_sequence: 1
+  created_by: "main_agent"
+  version: "1.1"
+  test_sequence: 2
   run_ui: false
 
 test_plan:
   current_focus:
-    - "All backend tasks completed and tested successfully"
+    - "Country Happiness Timeline API"
+    - "Layout Issues - Chart Legend Overlap"
+    - "Global Sentiment Legend Alignment"
+    - "Missing Helper Functions"
+    - "Country Extremes Display"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -297,3 +373,5 @@ agent_communication:
     message: "User reported Reddit data collection issue and asked about mobile compatibility. Investigation shows: 1) Reddit API returning 403 errors due to blocking public API access, 2) Mobile compatibility is working well with responsive layout, 3) Other data sources (Mastodon, Google Trends, YouTube, News, Twitter, Forums) are working correctly. Need to fix Reddit collector issue."
   - agent: "testing"
     message: "Reddit data collection fix tested and verified successfully. All requested tests completed: 1) Reddit collector get_random_posts returns valid posts with fallback system, 2) Fallback posts have correct structure with all required fields (id, title, text, subreddit, score, etc.), 3) Integration with main server data streaming works perfectly with Reddit data, 4) Reddit posts are being counted in source_breakdown statistics (currently 9 posts, 12.7% of total), 5) Sentiment analysis works properly with fallback Reddit posts, 6) All 7 data sources confirmed working including the fixed Reddit collector. Backend test suite shows 100% success rate (12/12 tests passed)."
+  - agent: "main"
+    message: "Addressed pending layout and functionality issues: 1) Fixed chart legend overlap by repositioning country legend to bottom with 60px reserved space, 2) Fixed global sentiment legend alignment using flexbox centering, 3) Added missing getHappiestCountry/getSaddestCountry helper functions that were causing JavaScript errors, 4) Implemented country extremes display with proper styling and color coding, 5) Verified uptime calculation is working correctly (displays in header). All visual and functional issues from pending tasks have been resolved. Ready for backend testing of new changes."
