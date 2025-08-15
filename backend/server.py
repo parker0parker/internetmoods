@@ -684,7 +684,7 @@ async def startup_event():
 async def periodic_broadcast():
     """Periodically broadcast happiness updates including country timelines"""
     while True:
-        if manager.active_connections and total_posts_analyzed > 0:
+        if manager.active_connections:
             # Calculate uptime
             uptime_seconds = int((datetime.utcnow() - app_start_time).total_seconds())
             uptime_hours = uptime_seconds // 3600
@@ -715,7 +715,7 @@ async def periodic_broadcast():
                 simplified_countries.append({
                     'name': country['name'],
                     'total_posts': country['total_posts'],
-                    'timeline': [point['happiness'] for point in country['timeline']]  # Extract just happiness values
+                    'timeline': [point for point in country['timeline']]  # Already simplified
                 })
             
             message = {
