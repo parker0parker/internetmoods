@@ -753,6 +753,21 @@ function App() {
     return () => websocket.close();
   }, []);
 
+  // Add scroll-based parallax effect for starfield
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const starfield = document.body;
+      if (starfield) {
+        // Create parallax effect by adjusting the background position
+        starfield.style.setProperty('--scroll-y', `${scrollY * 0.5}px`);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const getSentimentEmoji = (happiness) => {
     if (happiness >= 95) return '🤩'; // ecstatic
     if (happiness >= 90) return '😍'; // euphoric
