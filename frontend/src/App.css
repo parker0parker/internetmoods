@@ -418,7 +418,7 @@ body {
 .sentiment-emoji {
   font-size: 8rem;
   line-height: 0.8;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   text-align: center;
   filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
   animation: pulse-glow 3s ease-in-out infinite;
