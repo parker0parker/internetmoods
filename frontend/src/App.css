@@ -564,15 +564,22 @@ body::before {
   background-color: #000000;
   border: 1px solid #e3e3e3;
   position: relative;
-  height: 350px;
+  height: 400px;
+  padding-bottom: 60px;
 }
 
 .country-legend {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   flex-wrap: wrap;
   gap: 1rem 2rem;
   justify-content: center;
   padding: 0.5rem 1rem;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 4px;
 }
 
 .country-legend .legend-item {
@@ -581,6 +588,12 @@ body::before {
   text-transform: lowercase;
   letter-spacing: 0.05em;
   white-space: nowrap;
+}
+
+.happiness-canvas {
+  width: 100%;
+  height: calc(100% - 60px);
+  display: block;
 }
 
 .chart-title {
