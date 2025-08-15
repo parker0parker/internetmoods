@@ -354,6 +354,18 @@ body::before {
   text-transform: uppercase;
 }
 
+.uptime-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #999999;
+  opacity: 0.8;
+}
+
 .status-dot {
   width: 8px;
   height: 8px;
