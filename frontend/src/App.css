@@ -543,16 +543,32 @@ body::before {
   text-transform: lowercase;
 }
 
-/* Happiness Timeline Chart */
+/* Country Happiness Timeline Chart */
 .chart-section {
   margin-bottom: 4rem;
 }
 
-.happiness-chart {
+.country-happiness-chart {
   background-color: #000000;
   border: 1px solid #e3e3e3;
   position: relative;
   height: 350px;
+}
+
+.country-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+}
+
+.country-legend .legend-item {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
 .chart-title {
