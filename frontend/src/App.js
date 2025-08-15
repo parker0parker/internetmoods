@@ -255,6 +255,13 @@ const CountryHappinessChart = ({ countryTimelines, title }) => {
   useEffect(() => {
     if (!countryTimelines?.length || !canvasRef.current) return;
 
+    // Filter valid countries before processing
+    const validCountries = countryTimelines.filter(c => 
+      c && c.timeline && Array.isArray(c.timeline) && c.timeline.length > 0
+    );
+
+    if (validCountries.length === 0) return;
+
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     const width = canvas.width = canvas.offsetWidth * 2;
@@ -294,8 +301,8 @@ const CountryHappinessChart = ({ countryTimelines, title }) => {
       ctx.stroke();
     }
     
-    // Find max timeline length for X-axis
-    const maxLength = Math.max(...countryTimelines.map(c => c.timeline.length));
+    // Find max timeline length for X-axis (with defensive programming)
+    const maxLength = Math.max(...validCountries.map(c => c.timeline.length));
     
     // Vertical grid lines
     const timeIntervals = Math.min(10, maxLength);
@@ -309,10 +316,8 @@ const CountryHappinessChart = ({ countryTimelines, title }) => {
     
     ctx.globalAlpha = 1;
     
-    // Draw country lines
-    countryTimelines.forEach((country, countryIndex) => {
-      if (!country.timeline.length) return;
-      
+    // Draw country lines (using validCountries)
+    validCountries.forEach((country, countryIndex) => {
       const color = countryColors[countryIndex % countryColors.length];
       ctx.strokeStyle = color;
       ctx.lineWidth = 2;
