@@ -1006,6 +1006,10 @@ body::before {
     height: 250px;
   }
   
+  .happiness-canvas {
+    height: calc(100% - 35px); /* Maximized space for smallest mobile */
+  }
+  
   .country-legend .legend-item {
     font-size: 0.45rem;
   }
