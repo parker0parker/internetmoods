@@ -985,8 +985,13 @@ body::before {
     font-size: 0.55rem;
   }
   
-  .stats-grid {
+  .stats-section {
     margin-bottom: 1.5rem;
+  }
+  
+  .source-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
   }
   
   .stat-value {
