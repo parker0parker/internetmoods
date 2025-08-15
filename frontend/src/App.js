@@ -248,160 +248,193 @@ const WireframeGlobe = ({ happiness, countrySentiment, onCountryHover }) => {
   );
 };
 
-// Multi-Country Happiness Timeline Chart
-const CountryHappinessChart = ({ countryTimelines, title }) => {
+// Multi-Country Happiness Timeline Chart - Robust Version
+const CountryHappinessChart = ({ countryTimelines = [], title }) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
-    if (!countryTimelines?.length || !canvasRef.current) return;
-
-    // Filter valid countries before processing
-    const validCountries = countryTimelines.filter(c => 
-      c && c.timeline && Array.isArray(c.timeline) && c.timeline.length > 0
-    );
-
-    if (validCountries.length === 0) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width = canvas.offsetWidth * 2;
-    const height = canvas.height = canvas.offsetHeight * 2;
-    
-    ctx.scale(2, 2);
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(0, 0, width/2, height/2);
-
-    // Chart dimensions
-    const padding = 50;
-    const chartWidth = width/2 - padding * 2;
-    const chartHeight = height/2 - padding * 2;
-    
-    // Country colors (space theme palette)
-    const countryColors = [
-      '#00ff88', // Bright green
-      '#ffaa00', // Orange
-      '#ff4466', // Red
-      '#44ff66', // Light green
-      '#ff6644', // Red-orange
-      '#ffffff', // White
-      '#66aaff'  // Blue
-    ];
-    
-    // Draw grid lines
-    ctx.strokeStyle = '#333333';
-    ctx.lineWidth = 0.5;
-    ctx.globalAlpha = 0.3;
-    
-    // Horizontal grid lines
-    for (let i = 0; i <= 10; i++) {
-      const y = padding + (i / 10) * chartHeight;
-      ctx.beginPath();
-      ctx.moveTo(padding, y);
-      ctx.lineTo(padding + chartWidth, y);
-      ctx.stroke();
+    // Early returns with comprehensive safety checks
+    if (!Array.isArray(countryTimelines) || countryTimelines.length === 0 || !canvasRef.current) {
+      return;
     }
-    
-    // Find max timeline length for X-axis (with defensive programming)
-    const maxLength = Math.max(...validCountries.map(c => c.timeline.length));
-    
-    // Vertical grid lines
-    const timeIntervals = Math.min(10, maxLength);
-    for (let i = 0; i <= timeIntervals; i++) {
-      const x = padding + (i / timeIntervals) * chartWidth;
-      ctx.beginPath();
-      ctx.moveTo(x, padding);
-      ctx.lineTo(x, padding + chartHeight);
-      ctx.stroke();
-    }
-    
-    ctx.globalAlpha = 1;
-    
-    // Draw country lines (using validCountries)
-    validCountries.forEach((country, countryIndex) => {
-      const color = countryColors[countryIndex % countryColors.length];
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      
-      country.timeline.forEach((happiness, index) => {
-        const x = padding + (index / (maxLength - 1)) * chartWidth;
-        const normalizedHappiness = (happiness - 10) / 80; // 10-90 range mapped to 0-1
-        const y = padding + chartHeight - (normalizedHappiness * chartHeight);
-        
-        if (index === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
-        }
-      });
-      
-      ctx.stroke();
-      
-      // Add subtle glow effect
-      ctx.shadowColor = color;
-      ctx.shadowBlur = 3;
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-      
-      // Draw data points
-      ctx.fillStyle = color;
-      country.timeline.forEach((happiness, index) => {
-        const x = padding + (index / (maxLength - 1)) * chartWidth;
-        const normalizedHappiness = (happiness - 10) / 80;
-        const y = padding + chartHeight - (normalizedHappiness * chartHeight);
-        
-        ctx.beginPath();
-        ctx.arc(x, y, 2, 0, Math.PI * 2);
-        ctx.fill();
-      });
+
+    // Filter and validate countries with proper error handling
+    const validCountries = countryTimelines.filter(country => {
+      return (
+        country &&
+        typeof country === 'object' &&
+        country.name &&
+        Array.isArray(country.timeline) &&
+        country.timeline.length >= 5
+      );
     });
-    
-    // Draw Y-axis labels (happiness percentages)
-    ctx.fillStyle = '#666666';
-    ctx.font = '10px "Noto Sans Mono"';
-    ctx.textAlign = 'right';
-    
-    for (let i = 0; i <= 10; i++) {
-      const y = padding + (i / 10) * chartHeight;
-      const value = Math.round(90 - (i * 8)); // 90-10 range
-      ctx.fillText(`${value}%`, padding - 10, y + 3);
+
+    if (validCountries.length === 0) {
+      return;
     }
-    
-    // Draw time labels
-    ctx.textAlign = 'center';
-    ctx.font = '9px "Noto Sans Mono"';
-    const now = new Date();
-    
-    for (let i = 0; i <= 5; i++) {
-      const x = padding + (i / 5) * chartWidth;
-      const minutesAgo = Math.round((maxLength - 1) * (1 - i / 5) * 1.5);
-      const labelTime = new Date(now.getTime() - minutesAgo * 60000);
-      const timeLabel = labelTime.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: false 
+
+    try {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width = canvas.offsetWidth * 2;
+      const height = canvas.height = canvas.offsetHeight * 2;
+      
+      ctx.scale(2, 2);
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, width/2, height/2);
+
+      // Chart dimensions
+      const padding = 50;
+      const chartWidth = width/2 - padding * 2;
+      const chartHeight = height/2 - padding * 2;
+      
+      // Country colors (space theme palette)
+      const countryColors = [
+        '#00ff88', '#ffaa00', '#ff4466', '#44ff66', 
+        '#ff6644', '#ffffff', '#66aaff'
+      ];
+      
+      // Draw grid
+      ctx.strokeStyle = '#333333';
+      ctx.lineWidth = 0.5;
+      ctx.globalAlpha = 0.3;
+      
+      // Horizontal grid lines
+      for (let i = 0; i <= 10; i++) {
+        const y = padding + (i / 10) * chartHeight;
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(padding + chartWidth, y);
+        ctx.stroke();
+      }
+      
+      // Find max timeline length safely
+      const timelineLengths = validCountries.map(c => c.timeline.length);
+      const maxLength = Math.max(...timelineLengths);
+      
+      // Vertical grid lines
+      const timeIntervals = Math.min(10, maxLength);
+      for (let i = 0; i <= timeIntervals; i++) {
+        const x = padding + (i / timeIntervals) * chartWidth;
+        ctx.beginPath();
+        ctx.moveTo(x, padding);
+        ctx.lineTo(x, padding + chartHeight);
+        ctx.stroke();
+      }
+      
+      ctx.globalAlpha = 1;
+      
+      // Draw country lines
+      validCountries.forEach((country, countryIndex) => {
+        const color = countryColors[countryIndex % countryColors.length];
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        
+        let hasStarted = false;
+        country.timeline.forEach((happinessData, index) => {
+          // Extract happiness value - handle both number and object formats
+          const happiness = typeof happinessData === 'number' ? 
+            happinessData : 
+            (happinessData && typeof happinessData.happiness === 'number' ? 
+              happinessData.happiness : 50);
+          
+          const x = padding + (index / (maxLength - 1)) * chartWidth;
+          const normalizedHappiness = Math.max(0, Math.min(1, (happiness - 10) / 80));
+          const y = padding + chartHeight - (normalizedHappiness * chartHeight);
+          
+          if (!hasStarted) {
+            ctx.moveTo(x, y);
+            hasStarted = true;
+          } else {
+            ctx.lineTo(x, y);
+          }
+        });
+        
+        ctx.stroke();
+        
+        // Add glow effect
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 2;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+        
+        // Draw data points
+        ctx.fillStyle = color;
+        country.timeline.forEach((happinessData, index) => {
+          const happiness = typeof happinessData === 'number' ? 
+            happinessData : 
+            (happinessData && typeof happinessData.happiness === 'number' ? 
+              happinessData.happiness : 50);
+          
+          const x = padding + (index / (maxLength - 1)) * chartWidth;
+          const normalizedHappiness = Math.max(0, Math.min(1, (happiness - 10) / 80));
+          const y = padding + chartHeight - (normalizedHappiness * chartHeight);
+          
+          ctx.beginPath();
+          ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        });
       });
-      ctx.fillText(timeLabel, x, padding + chartHeight + 20);
+      
+      // Draw Y-axis labels
+      ctx.fillStyle = '#666666';
+      ctx.font = '10px "Noto Sans Mono"';
+      ctx.textAlign = 'right';
+      
+      for (let i = 0; i <= 10; i++) {
+        const y = padding + (i / 10) * chartHeight;
+        const value = Math.round(90 - (i * 8));
+        ctx.fillText(`${value}%`, padding - 10, y + 3);
+      }
+      
+      // Draw time labels
+      ctx.textAlign = 'center';
+      ctx.font = '9px "Noto Sans Mono"';
+      const now = new Date();
+      
+      for (let i = 0; i <= 5; i++) {
+        const x = padding + (i / 5) * chartWidth;
+        const minutesAgo = Math.round((maxLength - 1) * (1 - i / 5) * 1.5);
+        const labelTime = new Date(now.getTime() - minutesAgo * 60000);
+        const timeLabel = labelTime.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: false 
+        });
+        ctx.fillText(timeLabel, x, padding + chartHeight + 20);
+      }
+      
+    } catch (error) {
+      console.warn('Chart rendering error:', error);
     }
     
   }, [countryTimelines]);
+
+  // Safely get valid countries for legend
+  const validCountriesForLegend = Array.isArray(countryTimelines) ? 
+    countryTimelines.filter(c => 
+      c && 
+      typeof c === 'object' && 
+      c.name && 
+      Array.isArray(c.timeline) && 
+      c.timeline.length >= 5
+    ).slice(0, 7) : [];
 
   return (
     <div className="country-happiness-chart">
       <div className="chart-title">{title}</div>
       <div className="chart-legend country-legend">
-        {countryTimelines
-          .filter(c => c && c.timeline && Array.isArray(c.timeline) && c.timeline.length > 0)
-          .slice(0, 7)
-          .map((country, index) => {
-            const colors = ['#00ff88', '#ffaa00', '#ff4466', '#44ff66', '#ff6644', '#ffffff', '#66aaff'];
-            return (
-              <span key={country.name} className="legend-item" style={{ color: colors[index] }}>
-                ■ {country.name.toLowerCase()} ({country.total_posts})
-              </span>
-            );
-          })
-        }
+        {validCountriesForLegend.map((country, index) => {
+          const colors = ['#00ff88', '#ffaa00', '#ff4466', '#44ff66', '#ff6644', '#ffffff', '#66aaff'];
+          const totalPosts = country.total_posts || 0;
+          
+          return (
+            <span key={`${country.name}-${index}`} className="legend-item" style={{ color: colors[index] }}>
+              ■ {country.name.toLowerCase()} ({totalPosts})
+            </span>
+          );
+        })}
       </div>
       <canvas ref={canvasRef} className="happiness-canvas" />
     </div>
