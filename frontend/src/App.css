@@ -55,7 +55,7 @@ body::before {
     transform: translateY(0px);
   }
   100% {
-    transform: translateY(-200px);
+    transform: translateY(-400px);
   }
 }
 
