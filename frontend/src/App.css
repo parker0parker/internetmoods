@@ -383,11 +383,12 @@ body {
 
 /* Globe container cursor management */
 .globe-container {
-  height: 400px;
+  height: 500px;
   width: 100%;
   background: radial-gradient(circle, #111111 0%, #000000 100%);
   position: relative;
   cursor: default;
+  margin-top: -1rem;
 }
 
 .legend-colors {
