@@ -972,7 +972,7 @@ function App() {
           ))}
         </div>
         
-        {recentPosts.length === 0 && (
+        {(recentPosts || []).length === 0 && (
           <div className="empty-state">
             <div>MONITORING GLOBAL FREQUENCIES...</div>
           </div>
