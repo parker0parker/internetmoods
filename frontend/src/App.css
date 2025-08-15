@@ -325,15 +325,21 @@ body::before {
 /* Responsive updates for header */
 @media (max-width: 768px) {
   .header {
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
     gap: 1rem;
-    text-align: center;
+    text-align: left;  /* Keep left alignment */
+  }
+  
+  .main-title {
+    text-align: left;  /* Ensure title stays left */
   }
   
   .header-controls {
-    align-items: center;
-    flex-direction: row;
-    gap: 1rem;
+    align-items: flex-end;
+    flex-direction: column;  /* Stack controls vertically */
+    gap: 0.5rem;
   }
   
   .connection-indicator,
