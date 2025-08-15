@@ -996,39 +996,44 @@ function App() {
         </div>
       </div>
 
-      <div className="stats-grid">
-        <MinimalStat 
-          label="TOTAL ANALYZED"
-          value={happinessData.total_posts_analyzed.toLocaleString()}
-        />
-        <MinimalStat 
-          label="REDDIT"
-          value={happinessData.source_breakdown.reddit?.toLocaleString() || '0'}
-        />
-        <MinimalStat 
-          label="MASTODON"
-          value={happinessData.source_breakdown.mastodon?.toLocaleString() || '0'}
-        />
-        <MinimalStat 
-          label="TRENDS"
-          value={happinessData.source_breakdown.google_trends?.toLocaleString() || '0'}
-        />
-        <MinimalStat 
-          label="YOUTUBE"
-          value={happinessData.source_breakdown.youtube?.toLocaleString() || '0'}
-        />
-        <MinimalStat 
-          label="NEWS"
-          value={happinessData.source_breakdown.news?.toLocaleString() || '0'}
-        />
-        <MinimalStat 
-          label="TWITTER"
-          value={happinessData.source_breakdown.twitter?.toLocaleString() || '0'}
-        />
-        <MinimalStat 
-          label="FORUMS"
-          value={happinessData.source_breakdown.forums?.toLocaleString() || '0'}
-        />
+      <div className="stats-section">
+        <div className="total-stat-centered">
+          <MinimalStat 
+            label="TOTAL ANALYZED"
+            value={happinessData.total_posts_analyzed.toLocaleString()}
+          />
+        </div>
+        
+        <div className="source-stats-grid">
+          <MinimalStat 
+            label="REDDIT"
+            value={happinessData.source_breakdown.reddit?.toLocaleString() || '0'}
+          />
+          <MinimalStat 
+            label="MASTODON"
+            value={happinessData.source_breakdown.mastodon?.toLocaleString() || '0'}
+          />
+          <MinimalStat 
+            label="TRENDS"
+            value={happinessData.source_breakdown.google_trends?.toLocaleString() || '0'}
+          />
+          <MinimalStat 
+            label="YOUTUBE"
+            value={happinessData.source_breakdown.youtube?.toLocaleString() || '0'}
+          />
+          <MinimalStat 
+            label="NEWS"
+            value={happinessData.source_breakdown.news?.toLocaleString() || '0'}
+          />
+          <MinimalStat 
+            label="TWITTER"
+            value={happinessData.source_breakdown.twitter?.toLocaleString() || '0'}
+          />
+          <MinimalStat 
+            label="FORUMS"
+            value={happinessData.source_breakdown.forums?.toLocaleString() || '0'}
+          />
+        </div>
       </div>
 
       {happinessData.country_timelines && happinessData.country_timelines.length > 0 && (
