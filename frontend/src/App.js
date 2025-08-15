@@ -938,6 +938,24 @@ function App() {
               <span className="legend-color sad">■ melancholic/somber</span>
             </div>
           </div>
+          
+          <div className="country-extremes">
+            <div className="extreme-title">current extremes</div>
+            <div className="extreme-countries">
+              <div className="extreme-item">
+                <span className="extreme-label">happiest:</span>
+                <span className="extreme-country happy">
+                  {getHappiestCountry(happinessData.country_sentiment)}
+                </span>
+              </div>
+              <div className="extreme-item">
+                <span className="extreme-label">saddest:</span>
+                <span className="extreme-country sad">
+                  {getSaddestCountry(happinessData.country_sentiment)}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
