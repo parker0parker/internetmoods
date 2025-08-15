@@ -277,16 +277,17 @@ const CountryHappinessChart = ({ countryTimelines = [], title }) => {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       const width = canvas.width = canvas.offsetWidth * 2;
-      const height = canvas.height = canvas.offsetHeight * 2;
+      const height = canvas.height = (canvas.offsetHeight) * 2; // Account for reserved legend space
       
       ctx.scale(2, 2);
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, width/2, height/2);
 
-      // Chart dimensions
+      // Chart dimensions - leave more space at bottom for legend
       const padding = 50;
+      const bottomPadding = 80; // Extra space for legend
       const chartWidth = width/2 - padding * 2;
-      const chartHeight = height/2 - padding * 2;
+      const chartHeight = height/2 - padding - bottomPadding;
       
       // Country colors (space theme palette)
       const countryColors = [
