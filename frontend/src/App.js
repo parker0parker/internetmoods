@@ -712,7 +712,8 @@ function App() {
     source_breakdown: { reddit: 0, mastodon: 0, google_trends: 0, youtube: 0, news: 0, twitter: 0, forums: 0 },
     happiness_trend: [],
     country_sentiment: {},
-    country_timelines: []
+    country_timelines: [],
+    uptime: "00:00"
   });
   const [recentPosts, setRecentPosts] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
