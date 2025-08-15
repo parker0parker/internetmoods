@@ -269,6 +269,9 @@ backend:
       - working: true
         agent: "main"
         comment: "Uptime calculation working correctly. Backend properly calculates uptime from app_start_time and sends formatted uptime string (HH:MM format) via WebSocket messages every 5 seconds."
+      - working: true
+        agent: "testing"
+        comment: "Uptime calculation verified through WebSocket testing. Uptime is correctly calculated from app_start_time and formatted as HH:MM (e.g., 00:12). Uptime data is included in periodic WebSocket broadcasts every 5 seconds as expected."
 
 frontend:
   - task: "Frontend Integration"
