@@ -525,6 +525,18 @@ class HappinessIndexTester:
         except Exception as e:
             self.log_test("WebSocket Test Runner", False, f"Exception: {str(e)}")
             return False
+
+    def run_enhanced_websocket_test(self):
+        """Run enhanced WebSocket test in async context"""
+        try:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            result = loop.run_until_complete(self.test_websocket_enhanced_messages())
+            loop.close()
+            return result
+        except Exception as e:
+            self.log_test("Enhanced WebSocket Test Runner", False, f"Exception: {str(e)}")
+            return False
     
     def run_all_tests(self):
         """Run all backend tests"""
