@@ -715,7 +715,7 @@ async def periodic_broadcast():
                 simplified_countries.append({
                     'name': country['name'],
                     'total_posts': country['total_posts'],
-                    'timeline': [point for point in country['timeline']]  # Already simplified
+                    'timeline': country['timeline']  # Timeline already contains happiness values
                 })
             
             message = {
