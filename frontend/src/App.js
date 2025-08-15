@@ -695,7 +695,6 @@ const AboutSection = ({ isVisible, onClose }) => {
             The interface features a space observatory theme with multiple visualization layers:
           </p>
           <ul>
-            <li><strong>Starfield Background</strong> - Animated stars with parallax scrolling create depth and immersion</li>
             <li><strong>3D Wireframe Globe</strong> - Real-time country sentiment mapping with color-coded emotional states</li>
             <li><strong>Sentiment Emoji</strong> - Dynamic emotional expression that changes with global happiness levels</li>
             <li><strong>Country Timeline Charts</strong> - Multi-line graphs showing happiness trends for top countries over time</li>
