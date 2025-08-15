@@ -88,6 +88,7 @@ geographic_data = {}  # Store geographic sentiment data
 historical_data = deque(maxlen=1440)  # Store 24 hours of minute-by-minute data
 country_sentiment = {}  # Store country-specific sentiment data
 country_happiness_history = {}  # Store happiness timeline per country
+app_start_time = datetime.utcnow()  # Track app uptime
 
 def generate_country_sentiment(base_happiness):
     """Generate country-specific sentiment data with significant variation and track history"""
