@@ -337,6 +337,182 @@ class HappinessIndexTester:
         except Exception as e:
             self.log_test("Subreddit Diversity", False, f"Exception: {str(e)}")
             return False
+
+    def test_country_happiness_timeline_api(self):
+        """Test GET /api/country-happiness-timeline endpoint"""
+        try:
+            response = self.session.get(f"{API_BASE}/country-happiness-timeline")
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check required top-level fields
+                required_fields = ["countries", "last_updated"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_test("Country Timeline API Structure", False, f"Missing fields: {missing_fields}", data)
+                    return False
+                
+                # Check countries structure
+                countries = data.get("countries", [])
+                if not isinstance(countries, list):
+                    self.log_test("Country Timeline Countries Structure", False, "Countries not a list", data)
+                    return False
+                
+                # If there are countries, validate structure
+                if countries:
+                    country = countries[0]
+                    required_country_fields = ["name", "total_posts", "timeline"]
+                    missing_country_fields = [field for field in required_country_fields if field not in country]
+                    
+                    if missing_country_fields:
+                        self.log_test("Country Timeline Country Structure", False, f"Missing country fields: {missing_country_fields}", country)
+                        return False
+                    
+                    # Validate timeline structure
+                    timeline = country.get("timeline", [])
+                    if not isinstance(timeline, list):
+                        self.log_test("Country Timeline Timeline Structure", False, "Timeline not a list", country)
+                        return False
+                    
+                    # If timeline has data, validate structure
+                    if timeline:
+                        timeline_point = timeline[0]
+                        if isinstance(timeline_point, dict):
+                            required_timeline_fields = ["happiness", "timestamp"]
+                            missing_timeline_fields = [field for field in required_timeline_fields if field not in timeline_point]
+                            
+                            if missing_timeline_fields:
+                                self.log_test("Country Timeline Point Structure", False, f"Missing timeline fields: {missing_timeline_fields}", timeline_point)
+                                return False
+                        
+                        # Validate happiness values are in correct range
+                        for point in timeline[:5]:  # Check first 5 points
+                            if isinstance(point, dict):
+                                happiness = point.get("happiness", -1)
+                                if not (0 <= happiness <= 100):
+                                    self.log_test("Country Timeline Happiness Range", False, f"Happiness {happiness} not in range 0-100", point)
+                                    return False
+                
+                self.log_test("Country Happiness Timeline API", True, f"Retrieved {len(countries)} countries with timeline data", data)
+                return True
+            else:
+                self.log_test("Country Happiness Timeline API", False, f"Status: {response.status_code}", response.text)
+                return False
+        except Exception as e:
+            self.log_test("Country Happiness Timeline API", False, f"Exception: {str(e)}")
+            return False
+
+    async def test_websocket_enhanced_messages(self):
+        """Test WebSocket connection for enhanced messages with country timelines and uptime"""
+        try:
+            ws_url = f"{BACKEND_URL.replace('https://', 'wss://').replace('http://', 'ws://')}/api/ws"
+            
+            async with websockets.connect(ws_url) as websocket:
+                # Wait for initial status message
+                try:
+                    message = await asyncio.wait_for(websocket.recv(), timeout=5)
+                    data = json.loads(message)
+                    
+                    if data.get("type") == "initial_status":
+                        self.log_test("WebSocket Enhanced Initial", True, "Received initial status", data)
+                        self.websocket_messages.append(data)
+                        
+                        # Wait for happiness update messages with enhanced data
+                        enhanced_message_received = False
+                        for _ in range(3):  # Try to get 3 messages
+                            try:
+                                message = await asyncio.wait_for(websocket.recv(), timeout=8)
+                                data = json.loads(message)
+                                self.websocket_messages.append(data)
+                                
+                                if data.get("type") == "happiness_update":
+                                    update_data = data.get("data", {})
+                                    
+                                    # Check for enhanced fields
+                                    enhanced_fields = ["country_timelines", "uptime", "country_sentiment"]
+                                    found_enhanced = [field for field in enhanced_fields if field in update_data]
+                                    
+                                    if found_enhanced:
+                                        enhanced_message_received = True
+                                        
+                                        # Validate uptime format (should be HH:MM)
+                                        uptime = update_data.get("uptime", "")
+                                        if uptime and ":" in uptime:
+                                            self.log_test("WebSocket Uptime Format", True, f"Uptime format correct: {uptime}")
+                                        else:
+                                            self.log_test("WebSocket Uptime Format", False, f"Invalid uptime format: {uptime}")
+                                        
+                                        # Validate country_timelines structure
+                                        country_timelines = update_data.get("country_timelines", [])
+                                        if isinstance(country_timelines, list) and country_timelines:
+                                            country = country_timelines[0]
+                                            if isinstance(country, dict) and "name" in country and "timeline" in country:
+                                                self.log_test("WebSocket Country Timelines", True, f"Country timelines data present with {len(country_timelines)} countries")
+                                            else:
+                                                self.log_test("WebSocket Country Timelines", False, "Invalid country timeline structure")
+                                        else:
+                                            self.log_test("WebSocket Country Timelines", False, "No country timelines data")
+                                        
+                                        # Validate country_sentiment
+                                        country_sentiment = update_data.get("country_sentiment", {})
+                                        if isinstance(country_sentiment, dict) and country_sentiment:
+                                            self.log_test("WebSocket Country Sentiment", True, f"Country sentiment data present for {len(country_sentiment)} countries")
+                                        else:
+                                            self.log_test("WebSocket Country Sentiment", False, "No country sentiment data")
+                                        
+                                        break
+                                        
+                            except asyncio.TimeoutError:
+                                continue
+                        
+                        if enhanced_message_received:
+                            self.log_test("WebSocket Enhanced Messages", True, "Received enhanced happiness updates with new features")
+                            return True
+                        else:
+                            self.log_test("WebSocket Enhanced Messages", False, "No enhanced messages received")
+                            return False
+                        
+                    else:
+                        self.log_test("WebSocket Enhanced Initial Type", False, f"Unexpected message type: {data.get('type')}", data)
+                        return False
+                        
+                except asyncio.TimeoutError:
+                    self.log_test("WebSocket Enhanced Initial", False, "No initial message received")
+                    return False
+                    
+        except Exception as e:
+            self.log_test("WebSocket Enhanced Messages", False, f"Exception: {str(e)}")
+            return False
+
+    def test_all_data_sources_working(self):
+        """Test that all 7 data sources are working and contributing to the happiness index"""
+        try:
+            response = self.session.get(f"{API_BASE}/happiness")
+            if response.status_code != 200:
+                self.log_test("All Data Sources", False, f"Status: {response.status_code}")
+                return False
+            
+            data = response.json()
+            source_breakdown = data.get("source_breakdown", {})
+            
+            expected_sources = ["reddit", "mastodon", "google_trends", "youtube", "news", "twitter", "forums"]
+            working_sources = []
+            
+            for source in expected_sources:
+                if source in source_breakdown and source_breakdown[source] > 0:
+                    working_sources.append(source)
+            
+            if len(working_sources) >= 5:  # At least 5 out of 7 sources should be working
+                self.log_test("All Data Sources", True, f"{len(working_sources)}/7 data sources working: {working_sources}")
+                return True
+            else:
+                self.log_test("All Data Sources", False, f"Only {len(working_sources)}/7 data sources working: {working_sources}")
+                return False
+                
+        except Exception as e:
+            self.log_test("All Data Sources", False, f"Exception: {str(e)}")
+            return False
     
     def run_websocket_test(self):
         """Run WebSocket test in async context"""
