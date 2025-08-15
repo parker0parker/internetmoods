@@ -828,6 +828,9 @@ function App() {
         </div>
         
         <div className="sentiment-readout">
+          <div className="sentiment-emoji">
+            {getSentimentEmoji(happinessData.current_happiness)}
+          </div>
           <div 
             className="happiness-percentage"
             style={{ color: getSentimentColor(happinessData.current_happiness) }}
