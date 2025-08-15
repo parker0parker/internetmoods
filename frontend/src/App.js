@@ -825,7 +825,11 @@ function App() {
   return (
     <div className="app">
       <div className="header">
-        <h1 className="main-title">How is the Internet Feeling?</h1>
+        <h1 className="main-title">
+          How Is<br />
+          The Internet<br />
+          Feeling?
+        </h1>
         <div className="header-controls">
           <div className="connection-indicator">
             <span className={`status-dot ${isConnected ? 'live' : 'offline'}`}></span>
