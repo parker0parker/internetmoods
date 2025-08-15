@@ -273,7 +273,7 @@ body {
   font-weight: 100;
   letter-spacing: -0.02em;
   color: #e3e3e3;
-  text-transform: lowercase;
+  text-transform: uppercase;
 }
 
 /* Responsive updates for header */
