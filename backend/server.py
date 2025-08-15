@@ -702,6 +702,15 @@ async def periodic_broadcast():
                 reverse=True
             )[:5]
             
+            # Simplify timeline data for frontend
+            simplified_countries = []
+            for country in top_countries:
+                simplified_countries.append({
+                    'name': country['name'],
+                    'total_posts': country['total_posts'],
+                    'timeline': [point['happiness'] for point in country['timeline']]  # Extract just happiness values
+                })
+            
             message = {
                 "type": "happiness_update",
                 "data": {
@@ -710,7 +719,7 @@ async def periodic_broadcast():
                     "source_breakdown": source_breakdown.copy(),
                     "happiness_trend": list(happiness_scores)[-20:],  # Global trend
                     "country_sentiment": country_sentiment.copy(),
-                    "country_timelines": top_countries,  # New country timeline data
+                    "country_timelines": simplified_countries,  # Send simplified data
                     "recent_posts": recent_posts[:8]  # Send last 8 posts
                 }
             }
