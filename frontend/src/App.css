@@ -803,6 +803,25 @@ body::before {
     margin-top: 0; /* Remove any top margin */
   }
   
+  .connection-indicator,
+  .uptime-indicator {
+    font-size: 0.7rem;
+  }
+  
+  .about-button {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .about-content {
+    padding: 2rem;
+    margin: 1rem;
+  }
+  
+  .about-title {
+    font-size: 1.4rem;
+  }
+  
   .main-display {
     gap: 1.5rem;
     margin-bottom: 2rem;
