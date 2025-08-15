@@ -61,8 +61,10 @@ body::before {
 
 .app {
   min-height: 100vh;
-  background-color: #000000;
   padding: 2rem;
+  position: relative;
+  z-index: 1;
+  background: transparent;
 }
 
 /* Header Updates */
