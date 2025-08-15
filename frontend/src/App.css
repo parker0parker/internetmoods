@@ -442,6 +442,7 @@ body {
   text-transform: lowercase;
   letter-spacing: 0.05em;
   opacity: 0.8;
+  text-align: center;
 }
 
 /* Stats Grid */
