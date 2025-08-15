@@ -270,10 +270,11 @@ body {
 
 .main-title {
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: 400;
+  font-family: 'Universal Sans Display', 'Haas Grotesk', sans-serif;
   letter-spacing: -0.02em;
   color: #e3e3e3;
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 /* Responsive updates for header */
