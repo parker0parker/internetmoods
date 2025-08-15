@@ -649,7 +649,7 @@ body::before {
 
 .happiness-canvas {
   width: 100%;
-  height: calc(100% - 60px); /* Reserve space for bottom legend */
+  height: calc(100% - 50px); /* Reduced reserved space for legend since chart now uses less bottom padding */
   display: block;
 }
 
